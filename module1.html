@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — Module 1: GPS Position & Coordinates</title>
+  <meta name="description" content="GPS Position & Coordinate Calculation using position vectors and Euclidean distance formula"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo"><div class="brand-icon">🛰</div><span class="brand-name">VectorNav</span></div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item active"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()"><span class="mode-dot demo"></span><span id="mode-label">DEMO MODE</span></button>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>📍 Module 1 — GPS Position &amp; Coordinate Calculation</h1>
+      <p>INPUT → Position Vector → Distance Calculation → OUTPUT</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="window.startDemoMode()">▶ Start Demo</button>
+      <button class="btn btn-secondary btn-sm" onclick="window.stopDemoMode()">⏹ Stop</button>
+    </div>
+  </div>
+  <div class="page-content">
+    <!-- GPS Status -->
+    <div class="gps-status-bar">
+      <div class="gps-status-indicator"><div class="status-dot demo" id="status-dot"></div><span id="gps-status-label">Demo Mode</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lat</span><span class="gps-stat-value" id="gps-lat">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lon</span><span class="gps-stat-value" id="gps-lon">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Alt</span><span class="gps-stat-value" id="gps-alt">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Accuracy</span><span class="gps-stat-value" id="gps-accuracy">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Updated</span><span class="gps-stat-value" id="gps-updated">—</span></div>
+    </div>
+
+    <div class="module-flow">
+
+      <!-- ── SECTION 1: INPUT ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">📥</div>
+          <div><div class="module-section-title">INPUT — Obtain GPS Position</div>
+          <div class="module-section-sub">Use Browser Geolocation API or enter coordinates manually</div></div>
+        </div>
+        <div class="module-section-body">
+          <div class="cards-grid cards-grid-2">
+            <div class="card">
+              <div class="section-title" style="margin-bottom:var(--sp-3);">📡 Real-Time Live Location</div>
+              <p style="font-size:.8rem;color:var(--txt-secondary);margin-bottom:var(--sp-4);">
+                Auto-detect your real GPS position from your current device / browser anywhere in the world.
+              </p>
+              <div class="btn-group">
+                <button class="btn btn-primary" id="btn-use-location" onclick="window.useMyLocation()">📍 Auto-Detect My Location</button>
+                <button class="btn btn-secondary" onclick="window.startDemoMode()">▶ Run Demo Route</button>
+              </div>
+              <div style="margin-top:var(--sp-3);">
+                <label class="form-label" style="font-size:.75rem;">Switch Demo Route:</label>
+                <select class="form-select" style="font-size:.8rem;padding:6px 10px;" onchange="window.setDemoRoute(this.value)">
+                  <option value="chennai" selected>🌊 Chennai City Route (Central → Marina → Guindy → OMR)</option>
+                  <option value="south_regional">🌏 South India Regional (Chennai → Tirupati → Bengaluru → Madurai)</option>
+                  <option value="hyderabad">🏛 Hyderabad City Route (JNTU → Hitech City → Gachibowli)</option>
+                </select>
+              </div>
+            </div>
+            <div class="card">
+              <div class="section-title" style="margin-bottom:var(--sp-3);">⌨ Manual Location Entry</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Latitude (°)</label>
+                  <input id="manual-lat" class="form-input" type="number" step="0.000001" placeholder="e.g. 13.0827" value="13.0827"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Longitude (°)</label>
+                  <input id="manual-lon" class="form-input" type="number" step="0.000001" placeholder="e.g. 80.2707" value="80.2707"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Altitude (m)</label>
+                <input id="manual-alt" class="form-input" type="number" step="0.1" placeholder="e.g. 10" value="10"/>
+              </div>
+              <button class="btn btn-outline" onclick="window.useManualLocation()">Set Manual Location</button>
+            </div>
+          </div>
+
+          <!-- Destination Section with Interactive Map -->
+          <div class="card" style="margin-top:var(--sp-4);">
+            <div class="section-title" style="margin-bottom:var(--sp-2);">🏁 Select Destination (Address Search, Presets or Click on Map)</div>
+            <p style="font-size:.82rem;color:var(--txt-secondary);margin-bottom:var(--sp-4);">
+              Type any address, select a South India city, or <strong>click directly anywhere on the map below</strong> to pick your destination.
+            </p>
+
+            <!-- 1. Address Search Bar with Live Suggestions -->
+            <div class="form-group" style="position:relative;margin-bottom:var(--sp-4);">
+              <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">
+                <span>🔍 Search Address or Place Name</span>
+                <span style="font-size:.72rem;color:var(--txt-muted);">Auto-complete powered by OpenStreetMap</span>
+              </label>
+              <div style="display:flex;gap:8px;">
+                <input id="dest-search-input" class="form-input" type="text"
+                  placeholder="Type any place (e.g. Marina Beach, Guindy, Velachery, T. Nagar, Anna Nagar, Bengaluru, Tirupati)..."
+                  autocomplete="off"
+                  oninput="window.handleAddressSearch(this.value)"
+                  onfocus="if(this.value.trim().length>=2) window.handleAddressSearch(this.value)"/>
+              </div>
+              <div id="dest-search-suggestions" class="search-suggestions" style="display:none;"></div>
+            </div>
+
+            <!-- 2. Presets Dropdown -->
+            <div class="form-group" style="margin-bottom:var(--sp-4);">
+              <label class="form-label">Or Quick-Pick from South India Cities &amp; Chennai Landmarks</label>
+              <select id="preset-dest-select" class="form-select" onchange="window.fillPresetDest(this)">
+                <option value="">— Choose a City / Landmark —</option>
+                <optgroup label="📍 Tiruvallur, Sriperumbudur &amp; North-West Hubs">
+                  <option value="tiruvallur">Tiruvallur District HQ, Tamil Nadu</option>
+                  <option value="sriperumbudur">Sriperumbudur Industrial Hub, TN</option>
+                  <option value="arakkonam">Arakkonam Junction, Tamil Nadu</option>
+                  <option value="poondi">Poondi Reservoir, Tiruvallur, TN</option>
+                </optgroup>
+                <optgroup label="📍 Chennai Hubs &amp; Heritage">
+                  <option value="chn_central">Chennai Central Railway Station</option>
+                  <option value="chn_marina">Marina Beach, Chennai</option>
+                  <option value="chn_guindy">Guindy / IIT Madras, Chennai</option>
+                  <option value="chn_tnagar">T. Nagar (Pondy Bazaar), Chennai</option>
+                  <option value="chn_annanagar">Anna Nagar Tower, Chennai</option>
+                  <option value="chn_airport">Chennai International Airport (MAA)</option>
+                  <option value="chn_tambaram">Tambaram Terminal, Chennai</option>
+                  <option value="chn_velachery">Velachery Grand Mall, Chennai</option>
+                </optgroup>
+                <optgroup label="💻 Chennai IT Corridor &amp; Greater Region">
+                  <option value="chn_omr">OMR Thoraipakkam IT Corridor</option>
+                  <option value="chn_sholi" selected>Sholinganallur Junction, Chennai</option>
+                  <option value="chn_siruseri">Siruseri SIPCOT IT Park, Chennai</option>
+                  <option value="chn_mahabs">Mahabalipuram Shore Temple, TN</option>
+                  <option value="chn_kanchi">Kanchipuram Silk City, TN</option>
+                  <option value="chn_chengal">Chengalpattu Junction, TN</option>
+                </optgroup>
+                <optgroup label="🏛 Tamil Nadu Major Cities">
+                  <option value="pondi">Puducherry (Pondicherry Promenade)</option>
+                  <option value="coimbatore">Coimbatore Junction, Tamil Nadu</option>
+                  <option value="madurai">Madurai Meenakshi Temple, TN</option>
+                  <option value="trichy">Tiruchirappalli (Trichy Rockfort), TN</option>
+                  <option value="salem">Salem Junction, Tamil Nadu</option>
+                  <option value="vellore">Vellore Fort / VIT, Tamil Nadu</option>
+                  <option value="tirunelveli">Tirunelveli Junction, Tamil Nadu</option>
+                </optgroup>
+                <optgroup label="🌏 South India Regional Cities">
+                  <option value="tirupati">Tirupati (Alipiri), Andhra Pradesh</option>
+                  <option value="bangalore">Bengaluru (MG Road / Majestic), KA</option>
+                  <option value="mysore">Mysuru (Mysore Palace), Karnataka</option>
+                  <option value="kochi">Kochi (Marine Drive), Kerala</option>
+                  <option value="trivandrum">Thiruvananthapuram Central, Kerala</option>
+                  <option value="vijayawada">Vijayawada Junction, Andhra Pradesh</option>
+                  <option value="vizag">Visakhapatnam (Beach Road), AP</option>
+                  <option value="hyderabad">Hyderabad (Hitech City), Telangana</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- 3. Interactive Map -->
+            <div style="margin-bottom:var(--sp-4);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:.85rem;font-weight:700;color:var(--clr-primary-800);">🗺 Click on Map to Set Destination Address</span>
+                <span style="background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:4px;">🖱 Click anywhere on map</span>
+              </div>
+              <div id="mod1-map" style="height:360px;border-radius:var(--border-radius);border:1px solid var(--border-clr);"></div>
+              <div class="map-legend" style="border-top:none;border-radius:0 0 var(--border-radius) var(--border-radius);">
+                <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Current Position</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Destination (Selected)</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;"></div> Waypoints</div>
+              </div>
+            </div>
+
+            <!-- 4. Selected Address Live Card -->
+            <div id="selected-address-card" class="card" style="background:var(--clr-primary-50);border-color:var(--clr-primary-300);padding:var(--sp-3) var(--sp-4);margin-bottom:var(--sp-4);">
+              <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--clr-primary-700);margin-bottom:4px;">
+                📍 Selected Destination Address (Reverse Geocoded)
+              </div>
+              <div id="selected-address-text" style="font-weight:600;font-size:.9rem;color:var(--txt-primary);line-height:1.4;">
+                Sholinganallur Junction, Chennai, Tamil Nadu, India
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-size:.78rem;color:var(--txt-secondary);font-family:var(--font-mono);">
+                <span>Lat: <strong id="disp-dest-lat" style="color:var(--clr-primary-700);">12.898800</strong></span>
+                <span>Lon: <strong id="disp-dest-lon" style="color:var(--clr-primary-700);">80.227900</strong></span>
+                <span>Alt: <strong id="disp-dest-alt" style="color:var(--clr-primary-700);">8 m</strong></span>
+              </div>
+            </div>
+
+            <!-- 5. Dynamic Route Waypoints Summary & Table -->
+            <div id="route-waypoints-card" class="card" style="background:#f8fafc;border:1px solid #cbd5e1;padding:var(--sp-4);margin-bottom:var(--sp-4);display:none;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:var(--sp-3);">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:1.1rem;">🧭</span>
+                  <span style="font-weight:700;font-size:.95rem;color:var(--txt-primary);">Waypoints Along Your Route</span>
+                  <span id="wp-count-badge" class="badge" style="background:#7c3aed;color:#fff;font-weight:700;font-size:.75rem;padding:3px 8px;border-radius:12px;">0 Waypoints</span>
+                </div>
+                <span id="wp-source-badge" class="badge" style="background:#e0f2fe;color:#0369a1;font-size:.72rem;padding:3px 8px;border-radius:4px;font-weight:600;">Road Routing</span>
+              </div>
+
+              <div class="cards-grid cards-grid-3" style="margin-bottom:var(--sp-3);">
+                <div style="background:#fff;padding:8px 12px;border-radius:6px;border:1px solid var(--border-clr);">
+                  <div style="font-size:.7rem;color:var(--txt-muted);text-transform:uppercase;font-weight:700;">Total Waypoints</div>
+                  <div id="wp-stat-count" style="font-size:1.15rem;font-weight:800;color:#7c3aed;">0</div>
+                </div>
+                <div style="background:#fff;padding:8px 12px;border-radius:6px;border:1px solid var(--border-clr);">
+                  <div style="font-size:.7rem;color:var(--txt-muted);text-transform:uppercase;font-weight:700;">Road Distance</div>
+                  <div id="wp-total-dist" style="font-size:1.15rem;font-weight:800;color:var(--clr-primary-700);">0 km</div>
+                </div>
+                <div style="background:#fff;padding:8px 12px;border-radius:6px;border:1px solid var(--border-clr);">
+                  <div style="font-size:.7rem;color:var(--txt-muted);text-transform:uppercase;font-weight:700;">Est. Travel Time</div>
+                  <div id="wp-total-time" style="font-size:1.15rem;font-weight:800;color:#059669;">0 min</div>
+                </div>
+              </div>
+
+              <!-- Collapsible Waypoint Sequence Table -->
+              <details open>
+                <summary style="font-size:.82rem;font-weight:700;color:var(--clr-primary-700);cursor:pointer;margin-bottom:8px;">
+                  📋 View Waypoint Sequence &amp; Vector Displacements (Click row to zoom)
+                </summary>
+                <div style="max-height:220px;overflow-y:auto;border:1px solid var(--border-clr);border-radius:6px;background:#fff;">
+                  <table class="result-table" style="margin:0;font-size:.78rem;">
+                    <thead>
+                      <tr style="background:#f1f5f9;position:sticky;top:0;z-index:1;">
+                        <th style="padding:6px 10px;">Point</th>
+                        <th style="padding:6px 10px;">Location / Road</th>
+                        <th style="padding:6px 10px;">Coordinates</th>
+                        <th style="padding:6px 10px;">Displacement Δr (ECEF)</th>
+                        <th style="padding:6px 10px;">Cumulative Dist</th>
+                      </tr>
+                    </thead>
+                    <tbody id="waypoints-table-body">
+                      <tr><td colspan="5" style="text-align:center;color:var(--txt-muted);padding:12px;">Select start and destination to generate waypoints</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </div>
+
+            <!-- 6. Manual coordinate inputs (for fine-tuning) -->
+            <details style="margin-bottom:var(--sp-3);">
+              <summary style="font-size:.8rem;color:var(--clr-primary-600);cursor:pointer;font-weight:600;">⚙ Fine-tune Coordinates Manually</summary>
+              <div class="form-row" style="margin-top:8px;">
+                <div class="form-group">
+                  <label class="form-label">Destination Latitude</label>
+                  <input id="dest-lat" class="form-input" type="number" step="0.000001" placeholder="e.g. 12.8988" value="12.8988"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Destination Longitude</label>
+                  <input id="dest-lon" class="form-input" type="number" step="0.000001" placeholder="e.g. 80.2279" value="80.2279"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Destination Altitude (m)</label>
+                  <input id="dest-alt" class="form-input" type="number" step="0.1" placeholder="e.g. 8" value="8"/>
+                </div>
+              </div>
+            </details>
+
+            <button class="btn btn-success" onclick="window.setDestination()">🏁 Recalculate Distance &amp; Vector</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: POSITION VECTOR ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">⚙</div>
+          <div><div class="module-section-title">PROCESSING — Position Vector r(t) = x(t)î + y(t)ĵ + z(t)k̂</div>
+          <div class="module-section-sub">Converting GPS coordinates to ECEF Cartesian using WGS-84 ellipsoid</div></div>
+        </div>
+        <div class="module-section-body">
+          <div class="cards-grid cards-grid-2">
+            <div>
+              <div class="math-panel">
+                <div class="math-title">ECEF Position Vector Calculation</div>
+                <div class="math-formula">r(t) = x(t)î + y(t)ĵ + z(t)k̂</div>
+                <div class="math-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">Given: φ = <span class="highlight" id="pv-lat">—</span>°  λ = <span class="highlight" id="pv-lon">—</span>°  h = <span class="highlight" id="pv-alt">—</span></div>
+                </div>
+                <div class="math-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">N = a / √(1 − e²·sin²φ)  where a=6378137 m</div>
+                </div>
+                <div class="math-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">x = (N+h)·cos(φ)·cos(λ) = <span class="highlight" id="pv-x">—</span></div>
+                </div>
+                <div class="math-step">
+                  <div class="step-num">4</div>
+                  <div class="step-text">y = (N+h)·cos(φ)·sin(λ) = <span class="highlight" id="pv-y">—</span></div>
+                </div>
+                <div class="math-step">
+                  <div class="step-num">5</div>
+                  <div class="step-text">z = (N(1−e²)+h)·sin(φ) = <span class="highlight" id="pv-z">—</span></div>
+                </div>
+                <div class="calc-result">
+                  <div class="calc-result-label">Position Vector</div>
+                  <div class="calc-result-value" id="pv-formula">—</div>
+                </div>
+                <div class="calc-result" style="margin-top:8px;">
+                  <div class="calc-result-label">|r(t)| = √(x²+y²+z²)</div>
+                  <div class="calc-result-value" id="pv-magnitude">—</div>
+                </div>
+              </div>
+              <div class="alert alert-info">
+                <span>ℹ</span>
+                <span>GPS accuracy: <strong id="pv-accuracy">—</strong> — reflects real-world position error in metres.</span>
+              </div>
+            </div>
+            <div class="canvas-container">
+              <div class="section-title" style="margin-bottom:var(--sp-3);">3D Coordinate Visualization</div>
+              <canvas id="coord-canvas" width="280" height="240"></canvas>
+              <div style="font-size:.7rem;color:var(--txt-muted);text-align:center;margin-top:8px;">
+                Isometric projection of position vector r(t) in 3D space
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 3: DISTANCE ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">📏</div>
+          <div><div class="module-section-title">PROCESSING — Distance d = √((x₂−x₁)² + (y₂−y₁)² + (z₂−z₁)²)</div>
+          <div class="module-section-sub">Step-by-step 3D Euclidean distance + Haversine great-circle distance</div></div>
+        </div>
+        <div class="module-section-body">
+          <div class="math-panel">
+            <div class="math-title">Distance Calculation Steps</div>
+            <div class="math-step">
+              <div class="step-num">1</div>
+              <div class="step-text">Δx = x₂ − x₁ = <span class="highlight" id="dist-dx">—</span></div>
+            </div>
+            <div class="math-step">
+              <div class="step-num">2</div>
+              <div class="step-text">Δy = y₂ − y₁ = <span class="highlight" id="dist-dy">—</span></div>
+            </div>
+            <div class="math-step">
+              <div class="step-num">3</div>
+              <div class="step-text">Δz = z₂ − z₁ = <span class="highlight" id="dist-dz">—</span></div>
+            </div>
+            <div class="math-step">
+              <div class="step-num">4</div>
+              <div class="step-text">Δx² = <span class="highlight" id="dist-dx2">—</span>,  Δy² = <span class="highlight" id="dist-dy2">—</span>,  Δz² = <span class="highlight" id="dist-dz2">—</span></div>
+            </div>
+            <div class="math-step">
+              <div class="step-num">5</div>
+              <div class="step-text">Δx² + Δy² + Δz² = <span class="highlight" id="dist-sum">—</span></div>
+            </div>
+            <div class="calc-result">
+              <div class="calc-result-label">d (3D Euclidean) = √(sum)</div>
+              <div class="calc-result-value" id="dist-3d">—</div>
+            </div>
+            <div class="calc-result" style="margin-top:8px;">
+              <div class="calc-result-label">d (Haversine great-circle)</div>
+              <div class="calc-result-value" id="dist-hav">—</div>
+            </div>
+            <div class="calc-result" style="margin-top:8px;">
+              <div class="calc-result-label">Distance in km</div>
+              <div class="calc-result-value" id="dist-km">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: OUTPUT ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">📤</div>
+          <div><div class="module-section-title">OUTPUT — Module 1 Results</div>
+          <div class="module-section-sub">Summary of all GPS position and distance calculations</div></div>
+        </div>
+        <div class="module-section-body">
+          <div class="cards-grid cards-grid-2">
+            <div>
+              <div class="section-title" style="margin-bottom:var(--sp-3);">Current Position</div>
+              <table class="result-table">
+                <tr><th>Latitude</th><td id="out-lat">—</td></tr>
+                <tr><th>Longitude</th><td id="out-lon">—</td></tr>
+                <tr><th>Altitude</th><td id="out-alt">—</td></tr>
+                <tr><th>GPS Accuracy</th><td id="out-accuracy">—</td></tr>
+                <tr><th>Position Vector</th><td id="pv-formula-out" style="font-size:.75rem;">—</td></tr>
+              </table>
+            </div>
+            <div>
+              <div class="section-title" style="margin-bottom:var(--sp-3);">Destination &amp; Distance</div>
+              <table class="result-table">
+                <tr><th>Destination</th><td id="out-dest">—</td></tr>
+                <tr><th>Distance</th><td id="out-dist">—</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /module-flow -->
+  </div><!-- /page-content -->
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/module1.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  window.initModule1();
+
+  // Sync pv-formula to out field too
+  window.onPositionUpdate(pos => {
+    const el = document.getElementById('pv-formula');
+    if (el) window.setText('pv-formula-out', el.textContent);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — Live Navigation</title>
+  <meta name="description" content="VectorNav Live Navigation — full-screen map with real-time GPS tracking"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    #nav-map { height: calc(100vh - 140px); }
+    .nav-floating-panel {
+      position: absolute; top: 80px; right: 16px; z-index: 500;
+      background: rgba(15,32,68,.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(59,130,246,.25);
+      border-radius: var(--border-radius-lg);
+      padding: var(--sp-4) var(--sp-5);
+      min-width: 200px;
+      color: #fff;
+    }
+    .nav-fp-label { font-size:.65rem; color:var(--clr-primary-300); text-transform:uppercase; letter-spacing:.07em; }
+    .nav-fp-value { font-size:1.2rem; font-weight:700; font-family:var(--font-mono); margin-bottom:8px; }
+    .map-container-rel { position: relative; }
+  </style>
+</head>
+<body>
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo"><div class="brand-icon">🛰</div><span class="brand-name">VectorNav</span></div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item active"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()"><span class="mode-dot demo"></span><span id="mode-label">DEMO MODE</span></button>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>🧭 Live Navigation</h1>
+      <p>Full-screen GPS tracking with real-time vector calculus</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-success btn-sm" id="nav-start-btn" onclick="handleNavStart()">▶ Start Demo</button>
+      <button class="btn btn-secondary btn-sm" onclick="window.startLiveGPS(); window.showAlert('Live GPS started','info')">📡 Live GPS</button>
+    </div>
+  </div>
+
+  <!-- GPS status bar -->
+  <div style="padding:0 var(--sp-6);">
+    <div class="gps-status-bar">
+      <div class="gps-status-indicator"><div class="status-dot demo" id="status-dot"></div><span id="gps-status-label">Demo Mode</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lat</span><span class="gps-stat-value" id="gps-lat">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lon</span><span class="gps-stat-value" id="gps-lon">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Speed</span><span class="gps-stat-value" id="nav-speed">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Direction</span><span class="gps-stat-value" id="nav-dir">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Accuracy</span><span class="gps-stat-value" id="gps-accuracy">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Updated</span><span class="gps-stat-value" id="gps-updated">—</span></div>
+    </div>
+  </div>
+
+  <div style="padding:0 var(--sp-6) var(--sp-6); position:relative;">
+    <div class="map-container map-container-rel">
+      <div id="nav-map"></div>
+      <!-- Floating info panel -->
+      <div class="nav-floating-panel">
+        <div class="nav-fp-label">Speed</div>
+        <div class="nav-fp-value" id="fp-speed">0.0 km/h</div>
+        <div class="nav-fp-label">Direction</div>
+        <div class="nav-fp-value" id="fp-dir">—</div>
+        <div class="nav-fp-label">Position</div>
+        <div style="font-size:.8rem;font-family:var(--font-mono);color:#93c5fd;margin-bottom:8px;">
+          <span id="fp-lat">—</span><br><span id="fp-lon">—</span>
+        </div>
+        <div class="nav-fp-label">GPS Accuracy</div>
+        <div class="nav-fp-value" id="fp-acc">—</div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);">
+          <div class="nav-fp-label">r(t) = xi+yj+zk</div>
+          <div style="font-size:.7rem;font-family:var(--font-mono);color:#7dd3fc;line-height:1.5;" id="fp-rvec">—</div>
+        </div>
+      </div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Current Position (Pulse)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Destination</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Movement Trajectory</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script>
+const DEG2RAD = Math.PI/180;
+let _navTraj = [];
+let _navActive = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const startLat = window.VN.position ? window.VN.position.lat : 13.0827;
+  const startLon = window.VN.position ? window.VN.position.lon : 80.2707;
+  window.initMap('nav-map', { lat: startLat, lon: startLon, zoom: 13 });
+  window.showDemoWaypoints('nav-map');
+
+  const dest = window.getDemoWaypoints();
+  if (dest.length > 0) {
+    const last = dest[dest.length - 1];
+    window.setDestinationMarker('nav-map', last.lat, last.lon, last.name || 'Destination');
+  }
+
+  // Auto-detect location on load if available
+  window.autoDetectCurrentLocation(
+    pos => {
+      window.setPositionMarker('nav-map', pos.lat, pos.lon, 'My Location');
+      window.mapFlyTo('nav-map', pos.lat, pos.lon, 14);
+    },
+    () => {}
+  );
+
+  window.onPositionUpdate(pos => {
+    _navTraj.push({lat:pos.lat,lon:pos.lon});
+    if (_navTraj.length > 200) _navTraj.shift();
+
+    window.setPositionMarker('nav-map', pos.lat, pos.lon);
+    window.updateTrajectory('nav-map', _navTraj);
+    window.mapFlyTo('nav-map', pos.lat, pos.lon, 14);
+
+    window.setText('fp-lat', pos.lat.toFixed(6));
+    window.setText('fp-lon', pos.lon.toFixed(6));
+    window.setText('fp-acc', (pos.accuracy||4.2).toFixed(1)+' m');
+
+    const hist = window.getLastPoints(2);
+    if (hist.length===2) {
+      const v = window.clientMath.velocity(hist[0],hist[0].timestamp,hist[1],hist[1].timestamp);
+      if (v) {
+        window.setText('fp-speed',    v.speed_kmh.toFixed(1)+' km/h');
+        window.setText('nav-speed',   v.speed_kmh.toFixed(1)+' km/h');
+        const brg = window.clientMath.bearing(hist[0].lat,hist[0].lon,hist[1].lat,hist[1].lon);
+        const crd = window.clientMath.cardinal(brg);
+        window.setText('fp-dir',  crd+' ('+brg.toFixed(0)+'°)');
+        window.setText('nav-dir', crd+' ('+brg.toFixed(0)+'°)');
+
+        // ECEF vector
+        const ec = window.clientMath.latLonToEcef(pos.lat,pos.lon,pos.alt||0);
+        window.setText('fp-rvec', `x=${(ec.x/1e6).toFixed(3)}M m\ny=${(ec.y/1e6).toFixed(3)}M m\nz=${(ec.z/1e6).toFixed(3)}M m`);
+      }
+    }
+  });
+});
+
+function handleNavStart() {
+  const btn = document.getElementById('nav-start-btn');
+  if (!_navActive) {
+    window.startDemoMode();
+    _navActive = true;
+    btn.textContent='⏹ Stop';
+    btn.className='btn btn-danger btn-sm';
+  } else {
+    window.stopDemoMode();
+    _navActive=false;
+    btn.textContent='▶ Start Demo';
+    btn.className='btn btn-success btn-sm';
+  }
+}
+</script>
+</body>
+</html>

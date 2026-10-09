@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — About Project</title>
+  <meta name="description" content="About VectorNav — B.Tech Capstone: Application of Vector Calculus in Real-Time GPS Navigation Systems"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo"><div class="brand-icon">🛰</div><span class="brand-name">VectorNav</span></div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item active"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()"><span class="mode-dot demo"></span><span id="mode-label">DEMO MODE</span></button>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>ℹ About Project</h1>
+      <p>Applied Mathematics + Computer Science</p>
+    </div>
+  </div>
+  <div class="page-content">
+
+    <!-- Hero card -->
+    <div class="card" style="background:linear-gradient(135deg,var(--clr-primary-800),var(--clr-primary-700));color:#fff;margin-bottom:var(--sp-5);border:none;">
+      <div style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--clr-primary-300);margin-bottom:var(--sp-2);">Capstone Project</div>
+      <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:var(--sp-3);color:#fff;line-height:1.3;">
+        Application of Vector Calculus in<br>Real-Time GPS Navigation Systems
+      </h2>
+      <div style="font-size:.9rem;color:var(--clr-primary-200);margin-bottom:var(--sp-4);max-width:600px;">
+        A complete scientific application demonstrating how Position Vectors, Velocity, Acceleration,
+        Gradient, Divergence, Curl, and Line Integrals underpin modern GPS navigation systems.
+      </div>
+      <div style="font-size:.8rem;color:var(--clr-primary-300);">
+        Applied Mathematics | Computer Science | GPS Systems Engineering
+      </div>
+    </div>
+
+    <div class="cards-grid cards-grid-2" style="margin-bottom:var(--sp-5);">
+
+      <!-- Project Goal -->
+      <div class="card">
+        <div class="section-title" style="margin-bottom:var(--sp-4);">🎯 Project Goal</div>
+        <p style="font-size:.875rem;color:var(--txt-secondary);line-height:1.7;">
+          To develop a fully functional GPS navigation application that demonstrates the
+          practical application of vector calculus concepts — including position vectors,
+          velocity, acceleration, gradient, divergence, curl, and line integrals — through
+          interactive real-time computation and visualization.
+        </p>
+        <p style="font-size:.875rem;color:var(--txt-secondary);line-height:1.7;margin-top:var(--sp-3);">
+          All mathematical values displayed are computed from actual GPS or Demo Mode data.
+          No random values are used.
+        </p>
+      </div>
+
+      <!-- Modules -->
+      <div class="card">
+        <div class="section-title" style="margin-bottom:var(--sp-4);">📦 Three Core Modules</div>
+        <div style="margin-bottom:var(--sp-4);">
+          <div style="display:flex;align-items:flex-start;gap:var(--sp-3);margin-bottom:var(--sp-3);">
+            <div style="width:32px;height:32px;background:var(--clr-primary-100);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">📍</div>
+            <div>
+              <div style="font-weight:700;font-size:.875rem;">Module 1 — GPS Position &amp; Coordinate Calculation</div>
+              <div style="font-size:.8rem;color:var(--txt-secondary);">r(t)=xi+yj+zk · Distance=√(Δx²+Δy²+Δz²)</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:var(--sp-3);margin-bottom:var(--sp-3);">
+            <div style="width:32px;height:32px;background:var(--clr-primary-100);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">⚡</div>
+            <div>
+              <div style="font-weight:700;font-size:.875rem;">Module 2 — Motion, Velocity &amp; Direction Analysis</div>
+              <div style="font-size:.8rem;color:var(--txt-secondary);">v=dr/dt · a=dv/dt · u=v/|v| · Compass</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:var(--sp-3);">
+            <div style="width:32px;height:32px;background:var(--clr-primary-100);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">🗺</div>
+            <div>
+              <div style="font-weight:700;font-size:.875rem;">Module 3 — Route Optimization &amp; GPS Error Correction</div>
+              <div style="font-size:.8rem;color:var(--txt-secondary);">Cost=w₁d+w₂t+w₃e · Error=√(Δx²+Δy²+Δz²) · ∇f, ∇·F, ∇×F, ∫F·dr</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technologies -->
+    <div class="card" style="margin-bottom:var(--sp-5);">
+      <div class="section-title" style="margin-bottom:var(--sp-4);">🛠 Technologies Used</div>
+      <div class="cards-grid cards-grid-4">
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--txt-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:var(--sp-2);">Frontend</div>
+          <div class="tech-pills">
+            <span class="tech-pill">HTML5</span>
+            <span class="tech-pill">CSS3</span>
+            <span class="tech-pill">JavaScript</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--txt-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:var(--sp-2);">Mapping</div>
+          <div class="tech-pills">
+            <span class="tech-pill">Leaflet.js</span>
+            <span class="tech-pill">OpenStreetMap</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--txt-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:var(--sp-2);">Backend</div>
+          <div class="tech-pills">
+            <span class="tech-pill">Python</span>
+            <span class="tech-pill">Flask</span>
+            <span class="tech-pill">REST API</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--txt-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:var(--sp-2);">Data &amp; Charts</div>
+          <div class="tech-pills">
+            <span class="tech-pill">SQLite</span>
+            <span class="tech-pill">Chart.js</span>
+            <span class="tech-pill">Geolocation API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Architecture Diagram -->
+    <div class="card" style="margin-bottom:var(--sp-5);">
+      <div class="section-title" style="margin-bottom:var(--sp-4);">🏗 System Architecture</div>
+      <div class="arch-diagram">
+        <div class="arch-node highlight">🛰 GPS SATELLITES</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node">📡 GPS / DEMO DATA (Browser Geolocation API)</div>
+        <div class="arch-arrow">↓</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:600px;margin:0 auto 8px;">
+          <div class="arch-node highlight">HTML + CSS + JavaScript<br>Leaflet.js + Chart.js</div>
+          <div class="arch-node highlight">Flask REST API<br>Python Backend</div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node highlight" style="max-width:400px;">⚙ VECTOR CALCULATION ENGINE<br><span style="font-size:.7rem;font-weight:400;color:var(--clr-primary-300);">Position · Velocity · Acceleration · Direction<br>Gradient · Divergence · Curl · Line Integral<br>GPS Error · Route Cost</span></div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node">🗄 SQLite Database — GPS + Motion + Routes + History</div>
+      </div>
+    </div>
+
+    <!-- Data Flow -->
+    <div class="card" style="margin-bottom:var(--sp-5);">
+      <div class="section-title" style="margin-bottom:var(--sp-4);">🔄 Application Data Flow</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;">
+        <div style="background:var(--clr-primary-100);color:var(--clr-primary-800);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;">GPS / DEMO DATA</div>
+        <span style="color:var(--clr-primary-400);font-size:1.2rem;">→</span>
+        <div style="background:var(--clr-primary-100);color:var(--clr-primary-800);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;">POSITION VECTOR</div>
+        <span style="color:var(--clr-primary-400);font-size:1.2rem;">→</span>
+        <div style="background:var(--clr-primary-100);color:var(--clr-primary-800);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;">VELOCITY / SPEED</div>
+        <span style="color:var(--clr-primary-400);font-size:1.2rem;">→</span>
+        <div style="background:var(--clr-primary-100);color:var(--clr-primary-800);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;">ACCELERATION</div>
+        <span style="color:var(--clr-primary-400);font-size:1.2rem;">→</span>
+        <div style="background:var(--clr-primary-100);color:var(--clr-primary-800);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;">ROUTE OPTIMIZATION</div>
+        <span style="color:var(--clr-primary-400);font-size:1.2rem;">→</span>
+        <div style="background:var(--clr-primary-100);color:var(--clr-primary-800);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;">GPS ERROR CORRECTION</div>
+        <span style="color:var(--clr-primary-400);font-size:1.2rem;">→</span>
+        <div style="background:var(--clr-primary-500);color:#fff;padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:700;">NAVIGATION DISPLAY</div>
+      </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="cards-grid cards-grid-3" style="margin-bottom:var(--sp-5);">
+      <div class="card">
+        <div style="font-size:1.5rem;margin-bottom:var(--sp-3);">📍</div>
+        <div style="font-weight:700;margin-bottom:var(--sp-2);">Mathematically Correct</div>
+        <div style="font-size:.8rem;color:var(--txt-secondary);">All displayed values are derived from real GPS readings or consistent Demo Mode data. No random or static values.</div>
+      </div>
+      <div class="card">
+        <div style="font-size:1.5rem;margin-bottom:var(--sp-3);">🖥</div>
+        <div style="font-weight:700;margin-bottom:var(--sp-2);">Demo Mode</div>
+        <div style="font-size:.8rem;color:var(--txt-secondary);">Works 100% without GPS hardware or internet. Simulates a realistic route through Hyderabad for indoor presentations.</div>
+      </div>
+      <div class="card">
+        <div style="font-size:1.5rem;margin-bottom:var(--sp-3);">📊</div>
+        <div style="font-weight:700;margin-bottom:var(--sp-2);">Step-by-Step Display</div>
+        <div style="font-size:.8rem;color:var(--txt-secondary);">Every calculation shows intermediate steps, making it easy to explain during viva and understand the mathematics.</div>
+      </div>
+    </div>
+
+    <!-- Quick Start -->
+    <div class="card" style="background:var(--clr-primary-50);border-color:var(--clr-primary-200);">
+      <div class="section-title" style="margin-bottom:var(--sp-4);">🚀 Quick Start Guide</div>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-3);">
+        <div style="display:flex;gap:var(--sp-3);align-items:flex-start;">
+          <div style="width:28px;height:28px;background:var(--clr-primary-500);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;">1</div>
+          <div style="font-size:.875rem;"><strong>Start the backend:</strong> Open terminal in <code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">vectornav/backend/</code> and run <code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">pip install -r requirements.txt</code> then <code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">python app.py</code></div>
+        </div>
+        <div style="display:flex;gap:var(--sp-3);align-items:flex-start;">
+          <div style="width:28px;height:28px;background:var(--clr-primary-500);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;">2</div>
+          <div style="font-size:.875rem;"><strong>Open the app:</strong> Navigate to <code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">http://localhost:5000</code> in your browser</div>
+        </div>
+        <div style="display:flex;gap:var(--sp-3);align-items:flex-start;">
+          <div style="width:28px;height:28px;background:var(--clr-primary-500);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;">3</div>
+          <div style="font-size:.875rem;"><strong>Start Demo Mode:</strong> Click "▶ Start Demo" on the Dashboard to begin simulated GPS navigation with full math display</div>
+        </div>
+        <div style="display:flex;gap:var(--sp-3);align-items:flex-start;">
+          <div style="width:28px;height:28px;background:var(--clr-primary-500);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;">4</div>
+          <div style="font-size:.875rem;"><strong>Explore modules:</strong> Visit Module 1, 2, 3 to see detailed step-by-step calculations, charts, and visualizations</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+</body>
+</html>

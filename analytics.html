@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — Analytics</title>
+  <meta name="description" content="Navigation analytics dashboard with speed, acceleration and GPS accuracy statistics"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo"><div class="brand-icon">🛰</div><span class="brand-name">VectorNav</span></div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item active"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()"><span class="mode-dot demo"></span><span id="mode-label">DEMO MODE</span></button>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>📊 Analytics</h1>
+      <p>Session statistics from SQLite navigation history</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="loadAnalytics()">🔄 Refresh</button>
+    </div>
+  </div>
+  <div class="page-content">
+
+    <!-- Summary Cards -->
+    <div class="section-header"><div class="section-title">📋 Summary Statistics</div></div>
+    <div class="cards-grid cards-grid-4" style="margin-bottom:var(--sp-5);">
+      <div class="card card-metric"><div class="card-label">Total Records</div><div class="card-value" id="an-total">—</div><div class="card-sub">navigation readings</div></div>
+      <div class="card card-metric accent-cyan"><div class="card-label">Avg Speed</div><div class="card-value" id="an-avg-speed">—</div><div class="card-sub">km/h</div></div>
+      <div class="card card-metric accent-green"><div class="card-label">Max Speed</div><div class="card-value" id="an-max-speed">—</div><div class="card-sub">km/h</div></div>
+      <div class="card card-metric accent-orange"><div class="card-label">Avg Acceleration</div><div class="card-value" id="an-avg-acc">—</div><div class="card-sub">m/s²</div></div>
+    </div>
+    <div class="cards-grid cards-grid-4" style="margin-bottom:var(--sp-5);">
+      <div class="card card-metric accent-red"><div class="card-label">Max Acceleration</div><div class="card-value" id="an-max-acc">—</div><div class="card-sub">m/s²</div></div>
+      <div class="card card-metric"><div class="card-label">Avg GPS Accuracy</div><div class="card-value" id="an-avg-gps">—</div><div class="card-sub">metres</div></div>
+      <div class="card card-metric accent-cyan"><div class="card-label">Total Routes</div><div class="card-value" id="an-routes">—</div><div class="card-sub">optimised routes</div></div>
+      <div class="card card-metric accent-green"><div class="card-label">GPS Readings</div><div class="card-value" id="an-gps-cnt">—</div><div class="card-sub">stored in DB</div></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="section-header"><div class="section-title">📈 Time-Series Charts</div></div>
+    <div class="cards-grid cards-grid-2" style="margin-bottom:var(--sp-5);">
+      <div class="chart-container">
+        <div class="chart-title">Speed vs Time (km/h)</div>
+        <div class="chart-canvas-wrap"><canvas id="an-speed-chart"></canvas></div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">Acceleration vs Time (m/s²)</div>
+        <div class="chart-canvas-wrap"><canvas id="an-accel-chart"></canvas></div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">GPS Accuracy vs Time (m)</div>
+        <div class="chart-canvas-wrap"><canvas id="an-acc-chart"></canvas></div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">Summary Statistics</div>
+        <div class="chart-canvas-wrap"><canvas id="an-summary-chart"></canvas></div>
+      </div>
+    </div>
+
+    <div id="an-no-data" class="alert alert-info" style="display:none;">
+      <span>ℹ</span>
+      <span>No navigation data yet. Start the Demo Mode on the Dashboard or Module 2 to generate data, then return here.</span>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+<script src="js/charts.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', loadAnalytics);
+
+async function loadAnalytics() {
+  let data;
+  try {
+    data = await window.apiGet('/analytics');
+  } catch {
+    data = null;
+  }
+
+  if (!data || data.status !== 'ok') {
+    document.getElementById('an-no-data').style.display = 'flex';
+    _showDemoStats();
+    return;
+  }
+
+  const s = data.summary;
+  window.setText('an-total',     s.total_nav_records);
+  window.setText('an-avg-speed', (s.avg_speed_ms * 3.6).toFixed(2));
+  window.setText('an-max-speed', (s.max_speed_ms * 3.6).toFixed(2));
+  window.setText('an-avg-acc',   s.avg_acceleration.toFixed(4));
+  window.setText('an-max-acc',   s.max_acceleration.toFixed(4));
+  window.setText('an-avg-gps',   s.avg_gps_accuracy.toFixed(2));
+  window.setText('an-routes',    s.total_routes);
+  window.setText('an-gps-cnt',   s.total_gps_readings);
+
+  if (s.total_nav_records === 0) {
+    document.getElementById('an-no-data').style.display = 'flex';
+    _showDemoStats();
+    return;
+  }
+
+  const c = data.charts;
+  window.initAnalyticsSpeedChart('an-speed-chart', c.labels, c.speed_kmh);
+  window.initAnalyticsAccelChart('an-accel-chart', c.labels, c.acceleration);
+  window.initAnalyticsAccuracyChart('an-acc-chart', c.labels, c.accuracy);
+
+  window.initAnalyticsSummaryChart('an-summary-chart',
+    ['Avg Speed\n(km/h)', 'Max Speed\n(km/h)', 'Avg Acc\n(m/s²×10)', 'Max Acc\n(m/s²×10)', 'GPS Acc\n(m)', 'Routes'],
+    [
+      +(s.avg_speed_ms * 3.6).toFixed(2),
+      +(s.max_speed_ms * 3.6).toFixed(2),
+      +(s.avg_acceleration * 10).toFixed(3),
+      +(s.max_acceleration * 10).toFixed(3),
+      +s.avg_gps_accuracy.toFixed(2),
+      +s.total_routes,
+    ]
+  );
+}
+
+function _showDemoStats() {
+  // Show placeholder demo stats
+  window.setText('an-total',     '—');
+  window.setText('an-avg-speed', '—');
+  window.setText('an-max-speed', '—');
+  window.setText('an-avg-acc',   '—');
+  window.setText('an-max-acc',   '—');
+  window.setText('an-avg-gps',   '—');
+  window.setText('an-routes',    '—');
+  window.setText('an-gps-cnt',   '—');
+}
+</script>
+</body>
+</html>

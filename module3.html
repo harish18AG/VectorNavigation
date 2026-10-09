@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — Module 3: Route Optimization & GPS Error Correction</title>
+  <meta name="description" content="Route optimization using cost function and GPS error simulation/correction with vector calculus"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo"><div class="brand-icon">🛰</div><span class="brand-name">VectorNav</span></div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item active"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()"><span class="mode-dot demo"></span><span id="mode-label">DEMO MODE</span></button>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>🗺 Module 3 — Route Optimization &amp; GPS Error Correction</h1>
+      <p>Cost function optimization + GPS error simulation and correction</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="window.startDemoMode()">▶ Start Demo</button>
+      <button class="btn btn-secondary btn-sm" onclick="window.stopDemoMode()">⏹ Stop</button>
+    </div>
+  </div>
+  <div class="page-content">
+    <!-- GPS Status -->
+    <div class="gps-status-bar">
+      <div class="gps-status-indicator"><div class="status-dot demo" id="status-dot"></div><span id="gps-status-label">Demo Mode</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lat</span><span class="gps-stat-value" id="gps-lat">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lon</span><span class="gps-stat-value" id="gps-lon">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Alt</span><span class="gps-stat-value" id="gps-alt">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Accuracy</span><span class="gps-stat-value" id="gps-accuracy">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Updated</span><span class="gps-stat-value" id="gps-updated">—</span></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('route',this)">🗺 Part A — Route Optimization</button>
+      <button class="tab-btn" onclick="switchTab('error',this)">⚠ Part B — GPS Error Correction</button>
+      <button class="tab-btn" onclick="switchTab('vcalc',this)">∇ Vector Calculus Demo</button>
+    </div>
+
+    <!-- ===================== TAB A: ROUTE OPTIMIZATION ===================== -->
+    <div id="tab-route" class="tab-pane active">
+      <div class="module-flow">
+        <!-- Input -->
+        <div class="module-section">
+          <div class="module-section-header">
+            <div class="module-section-icon">📥</div>
+            <div><div class="module-section-title">INPUT — Start &amp; Destination Coordinates</div>
+            <div class="module-section-sub">Use live GPS, pick from South India cities, or click directly on the map</div></div>
+          </div>
+          <div class="module-section-body">
+            <!-- Search Destination Address -->
+            <div class="form-group" style="position:relative;margin-bottom:var(--sp-3);">
+              <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">
+                <span>🔍 Search Destination Address or Place</span>
+                <span style="font-size:.72rem;color:var(--txt-muted);">Auto-complete powered by OpenStreetMap</span>
+              </label>
+              <div style="display:flex;gap:8px;">
+                <input id="r-dest-search-input" class="form-input" type="text"
+                  placeholder="Type any place (e.g. Marina Beach, Guindy, Coimbatore, Bengaluru, Tirupati)..."
+                  autocomplete="off"
+                  oninput="window.handleRouteAddressSearch(this.value)"/>
+              </div>
+              <div id="r-dest-search-suggestions" class="search-suggestions" style="display:none;"></div>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:var(--sp-3);align-items:center;margin-bottom:var(--sp-4);">
+              <button class="btn btn-primary btn-sm" onclick="window.useCurrentLocationAsRouteStart()">📍 Use My Current Location as Start</button>
+              <div style="flex:1;min-width:240px;">
+                <select class="form-select" onchange="window.fillPresetRouteDest(this)">
+                  <option value="">— Quick Pick Destination (Chennai &amp; South India) —</option>
+                  <optgroup label="📍 Tiruvallur, Sriperumbudur &amp; North-West Hubs">
+                    <option value="tiruvallur">Tiruvallur District HQ, Tamil Nadu</option>
+                    <option value="sriperumbudur">Sriperumbudur Industrial Hub, TN</option>
+                    <option value="arakkonam">Arakkonam Junction, Tamil Nadu</option>
+                    <option value="poondi">Poondi Reservoir, Tiruvallur, TN</option>
+                  </optgroup>
+                  <optgroup label="📍 Chennai Hubs &amp; Heritage">
+                    <option value="chn_central">Chennai Central Railway Station</option>
+                    <option value="chn_marina">Marina Beach, Chennai</option>
+                    <option value="chn_guindy">Guindy / IIT Madras, Chennai</option>
+                    <option value="chn_tnagar">T. Nagar (Pondy Bazaar), Chennai</option>
+                    <option value="chn_annanagar">Anna Nagar Tower, Chennai</option>
+                    <option value="chn_airport">Chennai International Airport (MAA)</option>
+                    <option value="chn_tambaram">Tambaram Terminal, Chennai</option>
+                    <option value="chn_velachery">Velachery Grand Mall, Chennai</option>
+                  </optgroup>
+                  <optgroup label="💻 Chennai IT Corridor &amp; Greater Region">
+                    <option value="chn_omr">OMR Thoraipakkam IT Corridor</option>
+                    <option value="chn_sholi" selected>Sholinganallur Junction, Chennai</option>
+                    <option value="chn_siruseri">Siruseri SIPCOT IT Park, Chennai</option>
+                    <option value="chn_mahabs">Mahabalipuram Shore Temple, TN</option>
+                    <option value="chn_kanchi">Kanchipuram Silk City, TN</option>
+                    <option value="chn_chengal">Chengalpattu Junction, TN</option>
+                  </optgroup>
+                  <optgroup label="🏛 Tamil Nadu Major Cities">
+                    <option value="pondi">Puducherry (Pondicherry Promenade)</option>
+                    <option value="coimbatore">Coimbatore Junction, Tamil Nadu</option>
+                    <option value="madurai">Madurai Meenakshi Temple, TN</option>
+                    <option value="trichy">Tiruchirappalli (Trichy Rockfort), TN</option>
+                    <option value="salem">Salem Junction, Tamil Nadu</option>
+                    <option value="vellore">Vellore Fort / VIT, Tamil Nadu</option>
+                    <option value="tirunelveli">Tirunelveli Junction, Tamil Nadu</option>
+                  </optgroup>
+                  <optgroup label="🌏 South India Regional Cities">
+                    <option value="tirupati">Tirupati (Alipiri), Andhra Pradesh</option>
+                    <option value="bangalore">Bengaluru (MG Road / Majestic), KA</option>
+                    <option value="mysore">Mysuru (Mysore Palace), Karnataka</option>
+                    <option value="kochi">Kochi (Marine Drive), Kerala</option>
+                    <option value="trivandrum">Thiruvananthapuram Central, Kerala</option>
+                    <option value="vijayawada">Vijayawada Junction, Andhra Pradesh</option>
+                    <option value="vizag">Visakhapatnam (Beach Road), AP</option>
+                    <option value="hyderabad">Hyderabad (Hitech City), Telangana</option>
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+            <div style="font-size:.78rem;color:var(--clr-primary-600);margin-bottom:var(--sp-3);">
+              💡 <strong>Map Click Feature:</strong> Click anywhere directly on the map below to select your destination address!
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Start Latitude</label>
+                <input id="r-start-lat" class="form-input" type="number" step="0.00001" placeholder="13.0827" value="13.0827"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Start Longitude</label>
+                <input id="r-start-lon" class="form-input" type="number" step="0.00001" placeholder="80.2707" value="80.2707"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Destination Latitude</label>
+                <input id="r-dest-lat" class="form-input" type="number" step="0.00001" placeholder="12.8988" value="12.8988"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Destination Longitude</label>
+                <input id="r-dest-lon" class="form-input" type="number" step="0.00001" placeholder="80.2279" value="80.2279"/>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="btn-generate-routes" onclick="window.generateRoutes()">🗺 Generate &amp; Optimize Routes</button>
+          </div>
+        </div>
+
+        <!-- Cost Function Weights -->
+        <div class="module-section">
+          <div class="module-section-header">
+            <div class="module-section-icon">⚙</div>
+            <div><div class="module-section-title">PROCESSING — Route Cost Function</div>
+            <div class="module-section-sub">Cost = w₁·(distance_norm) + w₂·(time_norm) + w₃·(error_norm)</div></div>
+          </div>
+          <div class="module-section-body">
+            <div class="cards-grid cards-grid-3">
+              <div class="slider-group">
+                <div class="slider-label">w₁ — Distance Weight <span id="w1-val">0.50</span></div>
+                <input type="range" min="0" max="1" step="0.05" value="0.5"
+                  oninput="window.onWeightChange('w1',this.value)"/>
+              </div>
+              <div class="slider-group">
+                <div class="slider-label">w₂ — Time Weight <span id="w2-val">0.30</span></div>
+                <input type="range" min="0" max="1" step="0.05" value="0.3"
+                  oninput="window.onWeightChange('w2',this.value)"/>
+              </div>
+              <div class="slider-group">
+                <div class="slider-label">w₃ — Error Weight <span id="w3-val">0.20</span></div>
+                <input type="range" min="0" max="1" step="0.05" value="0.2"
+                  oninput="window.onWeightChange('w3',this.value)"/>
+              </div>
+            </div>
+            <div class="math-panel" style="margin-top:var(--sp-4);">
+              <div class="math-title">Cost Breakdown — Optimal Route</div>
+              <div class="math-formula">Cost = w₁·dist_norm + w₂·time_norm + w₃·error_norm</div>
+              <div class="math-step"><div class="step-num">1</div><div class="step-text">w₁ = <span class="highlight" id="cost-w1">—</span> | w₂ = <span class="highlight" id="cost-w2">—</span> | w₃ = <span class="highlight" id="cost-w3">—</span></div></div>
+              <div class="math-step"><div class="step-num">2</div><div class="step-text">Distance cost = <span class="highlight" id="cost-dist">—</span></div></div>
+              <div class="math-step"><div class="step-num">3</div><div class="step-text">Time cost = <span class="highlight" id="cost-time">—</span></div></div>
+              <div class="math-step"><div class="step-num">4</div><div class="step-text">Error cost = <span class="highlight" id="cost-error">—</span></div></div>
+              <div class="calc-result"><div class="calc-result-label">Total Cost</div><div class="calc-result-value" id="cost-total">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Route Cards -->
+        <div class="module-section">
+          <div class="module-section-header">
+            <div class="module-section-icon">🗺</div>
+            <div><div class="module-section-title">Route Comparison</div>
+            <div class="module-section-sub">Three candidate routes with calculated costs — optimal route highlighted</div></div>
+          </div>
+          <div class="module-section-body">
+            <div class="cards-grid cards-grid-3">
+              <div id="route-card-A" class="route-card">
+                <div class="route-badge">Route A</div>
+                <div style="color:var(--txt-muted);font-size:.85rem;">Click Generate Routes</div>
+              </div>
+              <div id="route-card-B" class="route-card">
+                <div class="route-badge">Route B</div>
+                <div style="color:var(--txt-muted);font-size:.85rem;">Click Generate Routes</div>
+              </div>
+              <div id="route-card-C" class="route-card">
+                <div class="route-badge">Route C</div>
+                <div style="color:var(--txt-muted);font-size:.85rem;">Click Generate Routes</div>
+              </div>
+            </div>
+            <div class="alert alert-success" style="margin-top:var(--sp-4);">
+              <span>✅</span>
+              <span><strong>OPTIMIZED ROUTE → <span id="optimal-label">—</span></strong>
+              | Distance: <span id="optimal-dist">—</span>
+              | Time: <span id="optimal-time">—</span>
+              | Cost: <span id="optimal-cost">—</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map -->
+        <div class="module-section">
+          <div class="module-section-header">
+            <div class="module-section-icon">🗺</div>
+            <div><div class="module-section-title">VISUALIZATION — Route Map</div></div>
+          </div>
+          <div class="module-section-body" style="padding:0;">
+            <div id="mod3-map" style="height:380px;"></div>
+            <div class="map-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> Route A</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Route B (Optimal)</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#dc2626;"></div> Route C</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Reference Position</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#dc2626;"></div> GPS Error Position</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Corrected Position</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== TAB B: GPS ERROR ===================== -->
+    <div id="tab-error" class="tab-pane">
+      <div class="module-flow">
+        <!-- Error Sources -->
+        <div class="module-section">
+          <div class="module-section-header">
+            <div class="module-section-icon">⚠</div>
+            <div><div class="module-section-title">GPS Error Sources — Educational Reference</div></div>
+          </div>
+          <div class="module-section-body">
+            <div class="cards-grid cards-grid-4">
+              <div class="card"><div class="card-label">Signal Delay</div><div style="font-size:.8rem;color:var(--txt-secondary);margin-top:4px;">Ionospheric &amp; tropospheric delays slow GPS signals, causing position offset.</div></div>
+              <div class="card"><div class="card-label">Multipath</div><div style="font-size:.8rem;color:var(--txt-secondary);margin-top:4px;">Signals reflecting off buildings arrive at multiple times, skewing position.</div></div>
+              <div class="card"><div class="card-label">Satellite Geometry</div><div style="font-size:.8rem;color:var(--txt-secondary);margin-top:4px;">Poor satellite configuration (high DOP) amplifies measurement errors.</div></div>
+              <div class="card"><div class="card-label">Receiver Noise</div><div style="font-size:.8rem;color:var(--txt-secondary);margin-top:4px;">Electronic noise in GPS chips introduces random offset in measured position.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Simulator -->
+        <div class="module-section">
+          <div class="module-section-header">
+            <div class="module-section-icon">🎮</div>
+            <div><div class="module-section-title">GPS ERROR SIMULATOR</div>
+            <div class="module-section-sub">Select error magnitude, simulate offset, apply correction</div></div>
+          </div>
+          <div class="module-section-body">
+            <div class="form-group">
+              <label class="form-label">Reference Position</label>
+              <div class="form-row">
+                <div><label class="form-label">Latitude</label><input id="err-ref-lat" class="form-input" type="number" step="0.000001"/></div>
+                <div><label class="form-label">Longitude</label><input id="err-ref-lon" class="form-input" type="number" step="0.000001"/></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Simulate GPS Error</label>
+              <div class="error-btns">
+                <button class="error-btn" id="err-btn-5"  onclick="window.setErrorAmount(5)">5 m</button>
+                <button class="error-btn active" id="err-btn-20" onclick="window.setErrorAmount(20)">20 m</button>
+                <button class="error-btn" id="err-btn-50" onclick="window.setErrorAmount(50)">50 m</button>
+                <button class="error-btn" id="err-btn-100" onclick="window.setErrorAmount(100)">100 m</button>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <input id="custom-err" class="form-input" type="number" style="width:90px;" placeholder="Custom m" min="1" max="5000"/>
+                  <button class="btn btn-secondary btn-sm" onclick="window.setErrorAmount(parseFloat(document.getElementById('custom-err').value)||20)">Set</button>
+                </div>
+              </div>
+              <div style="font-size:.8rem;color:var(--txt-secondary);margin-top:8px;">Selected error: <strong id="err-amount-display">20 m</strong></div>
+            </div>
+            <button class="btn btn-primary" onclick="window.runErrorSimulation()">🎯 Run Error Simulation</button>
+          </div>
+        </div>
+
+        <!-- Error Results -->
+        <div class="module-section">
+          <div class="module-section-header">
+            <div class="module-section-icon">📊</div>
+            <div><div class="module-section-title">Error Calculation — Error = √((Δx)² + (Δy)² + (Δz)²)</div></div>
+          </div>
+          <div class="module-section-body">
+            <div class="cards-grid cards-grid-3">
+              <div class="card" style="border-left:4px solid #2563eb;">
+                <div class="card-label" style="color:#2563eb;">🔵 Reference Position</div>
+                <div style="font-family:var(--font-mono);font-size:.85rem;margin-top:8px;">
+                  Lat: <strong id="err-ref-lat-disp">—</strong><br>
+                  Lon: <strong id="err-ref-lon-disp">—</strong>
+                </div>
+              </div>
+              <div class="card" style="border-left:4px solid #dc2626;">
+                <div class="card-label" style="color:#dc2626;">🔴 Measured (GPS) Position</div>
+                <div style="font-family:var(--font-mono);font-size:.85rem;margin-top:8px;">
+                  Lat: <strong id="err-meas-lat">—</strong><br>
+                  Lon: <strong id="err-meas-lon">—</strong>
+                </div>
+              </div>
+              <div class="card" style="border-left:4px solid #16a34a;">
+                <div class="card-label" style="color:#16a34a;">🟢 Corrected Position</div>
+                <div style="font-family:var(--font-mono);font-size:.85rem;margin-top:8px;">
+                  Lat: <strong id="err-corr-lat">—</strong><br>
+                  Lon: <strong id="err-corr-lon">—</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="math-panel" style="margin-top:var(--sp-4);">
+              <div class="math-title">GPS Error Calculation Steps</div>
+              <div class="math-formula">Error = √((Δx)² + (Δy)² + (Δz)²)</div>
+              <div class="math-step"><div class="step-num">1</div><div class="step-text">Δx (E-W offset) = <span class="highlight" id="err-dx">—</span></div></div>
+              <div class="math-step"><div class="step-num">2</div><div class="step-text">Δy (N-S offset) = <span class="highlight" id="err-dy">—</span></div></div>
+              <div class="math-step"><div class="step-num">3</div><div class="step-text">Δz (Alt offset) = <span class="highlight" id="err-dz">—</span></div></div>
+              <div class="calc-result"><div class="calc-result-label">GPS Error Distance</div><div class="calc-result-value" id="err-distance">—</div></div>
+            </div>
+
+            <div class="cards-grid cards-grid-4" style="margin-top:var(--sp-4);">
+              <div class="card card-metric accent-red"><div class="card-label">Error Before Correction</div><div class="card-value" id="corr-before">—</div></div>
+              <div class="card card-metric accent-green"><div class="card-label">Error After Correction</div><div class="card-value" id="corr-after">—</div></div>
+              <div class="card card-metric accent-cyan"><div class="card-label">Improvement</div><div class="card-value" id="corr-improvement">—</div></div>
+              <div class="card card-metric"><div class="card-label">Correction Factor</div><div class="card-value" id="corr-factor">85 %</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== TAB C: VECTOR CALCULUS ===================== -->
+    <div id="tab-vcalc" class="tab-pane">
+      <div class="alert alert-info" style="margin-bottom:var(--sp-5);">
+        <span>📚</span>
+        <span><strong>Educational Vector Calculus Demonstrations</strong> — These are mathematical demonstrations of vector calculus concepts relevant to navigation and field analysis. They are clearly labelled as educational — not claims about how commercial GPS routing systems work.</span>
+      </div>
+      <div class="module-flow">
+        <div class="cards-grid cards-grid-2">
+          <!-- Gradient -->
+          <div class="module-section">
+            <div class="module-section-header">
+              <div class="module-section-icon">∇</div>
+              <div><div class="module-section-title">Gradient — ∇f</div>
+              <div class="module-section-sub">Direction of greatest increase of a scalar field</div></div>
+            </div>
+            <div class="module-section-body">
+              <div class="math-panel">
+                <div class="math-title">∇f = (∂f/∂x)î + (∂f/∂y)ĵ</div>
+                <p style="font-size:.8rem;color:var(--clr-gray-300);margin-bottom:var(--sp-3);">
+                  In GPS navigation: ∇f represents the direction of steepest increase in elevation or signal strength field. Used in terrain-aware routing to avoid steep gradients.
+                </p>
+                <button class="btn btn-outline" onclick="window.runVectorCalcDemo('gradient')">▶ Run Gradient Demo</button>
+              </div>
+            </div>
+          </div>
+          <!-- Divergence -->
+          <div class="module-section">
+            <div class="module-section-header">
+              <div class="module-section-icon">∇·</div>
+              <div><div class="module-section-title">Divergence — ∇ · F</div>
+              <div class="module-section-sub">Net outward flow from a point in a vector field</div></div>
+            </div>
+            <div class="module-section-body">
+              <div class="math-panel">
+                <div class="math-title">∇·F = ∂Fx/∂x + ∂Fy/∂y</div>
+                <p style="font-size:.8rem;color:var(--clr-gray-300);margin-bottom:var(--sp-3);">
+                  In navigation analysis: positive divergence indicates traffic spreading out (highway junction); negative divergence indicates traffic converging (bottleneck). Useful in traffic flow modelling.
+                </p>
+                <button class="btn btn-outline" onclick="window.runVectorCalcDemo('divergence')">▶ Run Divergence Demo</button>
+              </div>
+            </div>
+          </div>
+          <!-- Curl -->
+          <div class="module-section">
+            <div class="module-section-header">
+              <div class="module-section-icon">∇×</div>
+              <div><div class="module-section-title">Curl — ∇ × F</div>
+              <div class="module-section-sub">Local rotational behaviour of a vector field</div></div>
+            </div>
+            <div class="module-section-body">
+              <div class="math-panel">
+                <div class="math-title">(∇×F)_z = ∂Fy/∂x − ∂Fx/∂y</div>
+                <p style="font-size:.8rem;color:var(--clr-gray-300);margin-bottom:var(--sp-3);">
+                  In navigation: curl of the velocity field indicates rotational traffic patterns (roundabouts, circular flyovers). Non-zero curl identifies turning flow regions.
+                </p>
+                <button class="btn btn-outline" onclick="window.runVectorCalcDemo('curl')">▶ Run Curl Demo</button>
+              </div>
+            </div>
+          </div>
+          <!-- Line Integral -->
+          <div class="module-section">
+            <div class="module-section-header">
+              <div class="module-section-icon">∫</div>
+              <div><div class="module-section-title">Line Integral — ∫C F · dr</div>
+              <div class="module-section-sub">Work done by a vector field along a path</div></div>
+            </div>
+            <div class="module-section-body">
+              <div class="math-panel">
+                <div class="math-title">∫C F·dr = Σ Fᵢ · Δrᵢ</div>
+                <p style="font-size:.8rem;color:var(--clr-gray-300);margin-bottom:var(--sp-3);">
+                  In navigation: ∫C F·dr represents the total effort (work against resistance) along a route. Lower line integral value means a more efficient path through a resistance field (wind, terrain, traffic).
+                </p>
+                <button class="btn btn-outline" onclick="window.runVectorCalcDemo('line_integral')">▶ Run Line Integral Demo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result panel -->
+        <div class="math-panel" id="vc-result-panel" style="display:none;margin-top:var(--sp-4);">
+          <div class="calc-result-label">Calculation Result</div>
+          <div class="calc-result-value">—</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/module3.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  window.initModule3();
+});
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  window.invalidateMap('mod3-map');
+}
+</script>
+</body>
+</html>
