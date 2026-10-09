@@ -1,0 +1,1165 @@
+/* ==========================================================================
+   VectorNav — Global Stylesheet
+   Professional Blue/White Scientific GPS Analysis Platform
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Google Fonts Import
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* --------------------------------------------------------------------------
+   2. CSS Custom Properties (Design Tokens)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Brand Colors */
+  --clr-primary-900: #0a1628;
+  --clr-primary-800: #0f2044;
+  --clr-primary-700: #1a3a6b;
+  --clr-primary-600: #1e4d99;
+  --clr-primary-500: #2563eb;
+  --clr-primary-400: #3b82f6;
+  --clr-primary-300: #60a5fa;
+  --clr-primary-200: #93c5fd;
+  --clr-primary-100: #dbeafe;
+  --clr-primary-50:  #eff6ff;
+
+  /* Accent */
+  --clr-accent-500: #0ea5e9;
+  --clr-accent-400: #38bdf8;
+  --clr-accent-300: #7dd3fc;
+
+  /* Status Colors */
+  --clr-success:  #16a34a;
+  --clr-warning:  #d97706;
+  --clr-danger:   #dc2626;
+  --clr-info:     #0891b2;
+
+  /* Neutral */
+  --clr-gray-900: #0f172a;
+  --clr-gray-800: #1e293b;
+  --clr-gray-700: #334155;
+  --clr-gray-600: #475569;
+  --clr-gray-500: #64748b;
+  --clr-gray-400: #94a3b8;
+  --clr-gray-300: #cbd5e1;
+  --clr-gray-200: #e2e8f0;
+  --clr-gray-100: #f1f5f9;
+  --clr-gray-50:  #f8fafc;
+
+  /* Sidebar */
+  --sidebar-bg:    var(--clr-gray-900);
+  --sidebar-width: 240px;
+
+  /* Surface */
+  --bg-page:  var(--clr-gray-50);
+  --bg-card:  #ffffff;
+  --bg-panel: var(--clr-primary-50);
+
+  /* Text */
+  --txt-primary:   var(--clr-gray-900);
+  --txt-secondary: var(--clr-gray-600);
+  --txt-muted:     var(--clr-gray-400);
+  --txt-inverse:   #ffffff;
+  --txt-accent:    var(--clr-primary-500);
+
+  /* Border */
+  --border-color: var(--clr-gray-200);
+  --border-radius-sm: 6px;
+  --border-radius:    10px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.07);
+
+  /* Spacing Scale */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-7: 28px; --sp-8: 32px;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Transitions */
+  --transition: all 0.2s ease;
+  --transition-slow: all 0.35s ease;
+}
+
+/* --------------------------------------------------------------------------
+   3. Reset & Base
+   -------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  color: var(--txt-primary);
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a { color: var(--clr-primary-500); text-decoration: none; }
+a:hover { color: var(--clr-primary-600); }
+
+img { max-width: 100%; display: block; }
+
+ul { list-style: none; }
+
+/* --------------------------------------------------------------------------
+   4. Layout — Sidebar + Main
+   -------------------------------------------------------------------------- */
+.app-sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  transition: var(--transition);
+}
+
+.app-main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  padding: var(--sp-6);
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   5. Sidebar Brand
+   -------------------------------------------------------------------------- */
+.sidebar-brand {
+  padding: var(--sp-6) var(--sp-5);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  text-decoration: none;
+  display: block;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+
+.brand-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--clr-primary-500), var(--clr-accent-400));
+  border-radius: var(--border-radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.brand-tagline {
+  font-size: 0.7rem;
+  color: var(--clr-gray-400);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* --------------------------------------------------------------------------
+   6. Sidebar Navigation
+   -------------------------------------------------------------------------- */
+.sidebar-nav {
+  padding: var(--sp-4) var(--sp-3);
+  flex: 1;
+}
+
+.nav-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--clr-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: var(--sp-4) var(--sp-3) var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-3);
+  border-radius: var(--border-radius-sm);
+  color: var(--clr-gray-400);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,.06);
+  color: #ffffff;
+}
+
+.nav-item.active {
+  background: rgba(37, 99, 235, .25);
+  color: #ffffff;
+  border-left: 3px solid var(--clr-primary-400);
+  padding-left: calc(var(--sp-3) - 3px);
+}
+
+.nav-item .nav-icon {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   7. Sidebar Footer — Mode Switcher
+   -------------------------------------------------------------------------- */
+.sidebar-footer {
+  padding: var(--sp-4) var(--sp-3);
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.mode-badge {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 20px;
+  font-size: 0.75rem; color: var(--clr-gray-300);
+  width: 100%; justify-content: center;
+  cursor: pointer; transition: var(--transition);
+}
+
+.mode-badge:hover { background: rgba(255,255,255,.12); }
+
+.mode-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--clr-success);
+  animation: pulse-dot 2s infinite;
+}
+
+.mode-dot.demo { background: var(--clr-warning); animation: none; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* --------------------------------------------------------------------------
+   8. Top Header Bar
+   -------------------------------------------------------------------------- */
+.page-header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--sp-4) var(--sp-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0;
+  z-index: 50;
+}
+
+.page-header-left h1 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+  line-height: 1.2;
+}
+
+.page-header-left p {
+  font-size: 0.8rem;
+  color: var(--txt-secondary);
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex; align-items: center; gap: var(--sp-3);
+}
+
+/* --------------------------------------------------------------------------
+   9. GPS Status Bar
+   -------------------------------------------------------------------------- */
+.gps-status-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--sp-3) var(--sp-5);
+  display: flex; align-items: center;
+  gap: var(--sp-6); flex-wrap: wrap;
+  margin-bottom: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.gps-status-indicator {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: 0.8rem; font-weight: 600;
+}
+
+.status-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+
+.status-dot.active   { background: var(--clr-success); box-shadow: 0 0 0 3px rgba(22,163,74,.2); animation: pulse-dot 2s infinite; }
+.status-dot.inactive { background: var(--clr-danger);  }
+.status-dot.demo     { background: var(--clr-warning); box-shadow: 0 0 0 3px rgba(217,119,6,.2); animation: pulse-dot 2s infinite; }
+
+.gps-stat {
+  display: flex; flex-direction: column;
+}
+
+.gps-stat-label {
+  font-size: 0.65rem;
+  color: var(--txt-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.gps-stat-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--txt-primary);
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   10. Cards
+   -------------------------------------------------------------------------- */
+.cards-grid {
+  display: grid;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+
+.cards-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.cards-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.cards-grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+
+.card-metric {
+  border-top: 3px solid var(--clr-primary-400);
+}
+
+.card-metric.accent-green  { border-top-color: var(--clr-success); }
+.card-metric.accent-orange { border-top-color: var(--clr-warning); }
+.card-metric.accent-red    { border-top-color: var(--clr-danger); }
+.card-metric.accent-cyan   { border-top-color: var(--clr-accent-500); }
+
+.card-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--txt-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: var(--sp-1);
+}
+
+.card-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+  line-height: 1;
+  font-family: var(--font-mono);
+}
+
+.card-unit {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--txt-secondary);
+  margin-left: 4px;
+}
+
+.card-sub {
+  font-size: 0.75rem;
+  color: var(--txt-secondary);
+  margin-top: var(--sp-1);
+}
+
+/* --------------------------------------------------------------------------
+   11. Section Headers
+   -------------------------------------------------------------------------- */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--sp-4);
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 18px;
+  background: var(--clr-primary-400);
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   12. Map Container
+   -------------------------------------------------------------------------- */
+.map-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: var(--sp-5);
+}
+
+.map-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-card);
+}
+
+.map-title {
+  font-size: 0.875rem; font-weight: 600;
+}
+
+#map, #nav-map, #mod1-map, #mod2-map, #mod3-map, #error-map {
+  height: 420px;
+  width: 100%;
+}
+
+.map-legend {
+  display: flex; align-items: center; gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  border-top: 1px solid var(--border-color);
+  background: var(--clr-gray-50);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: 0.75rem; color: var(--txt-secondary);
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   13. Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem; font-weight: 600;
+  border: none; cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--clr-primary-500);
+  color: #ffffff;
+}
+.btn-primary:hover:not(:disabled) { background: var(--clr-primary-600); }
+
+.btn-secondary {
+  background: var(--clr-gray-100);
+  color: var(--txt-primary);
+  border: 1px solid var(--border-color);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--clr-gray-200); }
+
+.btn-success {
+  background: var(--clr-success);
+  color: #ffffff;
+}
+.btn-success:hover:not(:disabled) { background: #15803d; }
+
+.btn-danger {
+  background: var(--clr-danger);
+  color: #ffffff;
+}
+.btn-danger:hover:not(:disabled) { background: #b91c1c; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--clr-primary-500);
+  border: 1.5px solid var(--clr-primary-400);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--clr-primary-50);
+}
+
+.btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+.btn-lg { padding: 12px 24px; font-size: 0.9rem; }
+
+.btn-group {
+  display: flex; gap: var(--sp-2); flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   14. Form Controls
+   -------------------------------------------------------------------------- */
+.form-group { margin-bottom: var(--sp-4); }
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--txt-secondary);
+  margin-bottom: var(--sp-2);
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  color: var(--txt-primary);
+  background: var(--bg-card);
+  transition: var(--transition);
+  outline: none;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--clr-primary-400);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+/* --------------------------------------------------------------------------
+   15. Range Slider
+   -------------------------------------------------------------------------- */
+.slider-group { margin-bottom: var(--sp-4); }
+
+.slider-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; font-weight: 500;
+  color: var(--txt-secondary); margin-bottom: var(--sp-2);
+}
+
+.slider-label span {
+  font-weight: 700; color: var(--clr-primary-500);
+  font-family: var(--font-mono);
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--clr-primary-500);
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   16. Math / Formula Display
+   -------------------------------------------------------------------------- */
+.math-panel {
+  background: var(--clr-primary-900);
+  border-radius: var(--border-radius);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-4);
+  border: 1px solid rgba(59,130,246,.2);
+}
+
+.math-panel .math-title {
+  font-size: 0.75rem; font-weight: 600;
+  color: var(--clr-primary-300);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  margin-bottom: var(--sp-3);
+}
+
+.math-formula {
+  font-family: var(--font-mono);
+  font-size: 1rem; font-weight: 500;
+  color: #e2e8f0;
+  margin-bottom: var(--sp-3);
+  line-height: 1.8;
+}
+
+.math-step {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+
+.step-num {
+  width: 22px; height: 22px;
+  background: var(--clr-primary-600);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: #fff;
+  flex-shrink: 0; margin-top: 2px;
+}
+
+.step-text {
+  font-size: 0.8rem;
+  color: var(--clr-gray-300);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+}
+
+.step-text .highlight {
+  color: var(--clr-primary-300); font-weight: 600;
+}
+
+.calc-result {
+  background: rgba(37,99,235,.15);
+  border: 1px solid rgba(59,130,246,.3);
+  border-radius: var(--border-radius-sm);
+  padding: var(--sp-3) var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.calc-result-label {
+  font-size: 0.7rem; color: var(--clr-primary-300);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.calc-result-value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem; font-weight: 700;
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   17. Module Page Layout
+   -------------------------------------------------------------------------- */
+.module-flow {
+  display: flex; flex-direction: column; gap: var(--sp-5);
+}
+
+.module-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.module-section-header {
+  background: linear-gradient(135deg, var(--clr-primary-700), var(--clr-primary-600));
+  padding: var(--sp-4) var(--sp-5);
+  color: #fff;
+  display: flex; align-items: center; gap: var(--sp-3);
+}
+
+.module-section-icon {
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,.15);
+  border-radius: var(--border-radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+.module-section-title { font-size: 0.9rem; font-weight: 700; }
+.module-section-sub   { font-size: 0.72rem; opacity: 0.8; margin-top: 1px; }
+
+.module-section-body { padding: var(--sp-5); }
+
+/* --------------------------------------------------------------------------
+   18. Output / Result Tables
+   -------------------------------------------------------------------------- */
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.825rem;
+}
+
+.result-table th, .result-table td {
+  padding: var(--sp-3) var(--sp-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.result-table th {
+  font-weight: 600; font-size: 0.75rem;
+  color: var(--txt-muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  background: var(--clr-gray-50);
+}
+
+.result-table td:last-child {
+  font-family: var(--font-mono);
+  font-weight: 600; color: var(--clr-primary-600);
+}
+
+.result-table tr:last-child td { border-bottom: none; }
+
+/* --------------------------------------------------------------------------
+   19. Charts
+   -------------------------------------------------------------------------- */
+.chart-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-title {
+  font-size: 0.875rem; font-weight: 700;
+  margin-bottom: var(--sp-4);
+  color: var(--txt-primary);
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  height: 220px;
+}
+
+/* --------------------------------------------------------------------------
+   20. Canvas (Compass, Coordinate Viz)
+   -------------------------------------------------------------------------- */
+.canvas-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--sp-5);
+  display: flex; flex-direction: column; align-items: center;
+  box-shadow: var(--shadow-sm);
+}
+
+canvas { display: block; }
+
+/* --------------------------------------------------------------------------
+   21. Route Cards (Module 3)
+   -------------------------------------------------------------------------- */
+.route-card {
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--sp-4);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.route-card:hover   { border-color: var(--clr-primary-400); }
+.route-card.optimal { border-color: var(--clr-success); background: rgba(22,163,74,.04); }
+.route-card.selected { border-color: var(--clr-primary-500); background: var(--clr-primary-50); }
+
+.route-badge {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  background: var(--clr-primary-100);
+  color: var(--clr-primary-700);
+  font-size: 0.7rem; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px;
+  margin-bottom: var(--sp-2);
+}
+
+.route-badge.optimal { background: rgba(22,163,74,.15); color: var(--clr-success); }
+
+.route-stat { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: var(--sp-1); }
+.route-stat-label { color: var(--txt-secondary); }
+.route-stat-value { font-weight: 600; font-family: var(--font-mono); }
+
+/* --------------------------------------------------------------------------
+   22. Error Simulation Panel
+   -------------------------------------------------------------------------- */
+.error-btns {
+  display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-4);
+}
+
+.error-btn {
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+}
+
+.error-btn:hover, .error-btn.active {
+  border-color: var(--clr-danger);
+  background: rgba(220,38,38,.06);
+  color: var(--clr-danger);
+}
+
+/* --------------------------------------------------------------------------
+   23. Alert Messages
+   -------------------------------------------------------------------------- */
+.alert {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.825rem; font-weight: 500;
+  margin-bottom: var(--sp-4);
+}
+
+.alert-info    { background: #e0f2fe; color: #0369a1; border-left: 4px solid #0ea5e9; }
+.alert-success { background: #dcfce7; color: #166534; border-left: 4px solid #22c55e; }
+.alert-warning { background: #fef9c3; color: #854d0e; border-left: 4px solid #eab308; }
+.alert-danger  { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+
+/* --------------------------------------------------------------------------
+   24. Formula Reference Page
+   -------------------------------------------------------------------------- */
+.formula-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.formula-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+
+.formula-card-header {
+  background: linear-gradient(135deg, var(--clr-primary-800), var(--clr-primary-700));
+  padding: var(--sp-4) var(--sp-5);
+  color: #fff;
+}
+
+.formula-name { font-size: 0.875rem; font-weight: 700; margin-bottom: var(--sp-2); }
+
+.formula-expr {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  color: var(--clr-primary-200);
+  line-height: 1.5;
+}
+
+.formula-card-body {
+  padding: var(--sp-4) var(--sp-5);
+}
+
+.formula-what {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--clr-primary-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--sp-2);
+}
+
+.formula-desc {
+  font-size: 0.85rem;
+  color: var(--txt-secondary);
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   25. History Table
+   -------------------------------------------------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: 0.8rem;
+}
+
+.data-table th {
+  background: var(--clr-gray-50);
+  padding: var(--sp-3) var(--sp-4);
+  text-align: left; font-weight: 600; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--txt-muted);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--txt-secondary);
+}
+
+.data-table td:first-child { font-family: var(--font-mono); color: var(--txt-muted); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--clr-gray-50); }
+
+/* --------------------------------------------------------------------------
+   26. Architecture Diagram (About page)
+   -------------------------------------------------------------------------- */
+.arch-diagram {
+  background: var(--clr-primary-900);
+  border-radius: var(--border-radius-lg);
+  padding: var(--sp-6);
+  overflow: hidden;
+}
+
+.arch-node {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(59,130,246,.3);
+  border-radius: var(--border-radius);
+  padding: var(--sp-3) var(--sp-5);
+  color: #e2e8f0; text-align: center;
+  font-size: 0.8rem; font-weight: 600;
+  margin: 0 auto var(--sp-2);
+  max-width: 300px;
+}
+
+.arch-node.highlight {
+  background: rgba(37,99,235,.2);
+  border-color: var(--clr-primary-400);
+  color: #fff;
+}
+
+.arch-arrow {
+  text-align: center; color: var(--clr-primary-400);
+  font-size: 1.2rem; margin-bottom: var(--sp-2);
+}
+
+/* --------------------------------------------------------------------------
+   27. Compass Visualization Label
+   -------------------------------------------------------------------------- */
+.compass-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-4);
+}
+
+.compass-info {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3);
+  width: 100%;
+}
+
+.compass-stat {
+  background: var(--clr-primary-50);
+  border-radius: var(--border-radius-sm);
+  padding: var(--sp-3) var(--sp-4);
+  text-align: center;
+}
+
+.compass-stat-label {
+  font-size: 0.65rem; font-weight: 600; color: var(--txt-muted);
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+
+.compass-stat-value {
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--clr-primary-600);
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   28. Tabs
+   -------------------------------------------------------------------------- */
+.tabs {
+  display: flex; border-bottom: 2px solid var(--border-color);
+  margin-bottom: var(--sp-5); gap: 2px;
+}
+
+.tab-btn {
+  padding: var(--sp-3) var(--sp-5);
+  background: none; border: none;
+  font-size: 0.85rem; font-weight: 600;
+  color: var(--txt-muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: var(--transition);
+  font-family: var(--font-sans);
+}
+
+.tab-btn:hover  { color: var(--txt-primary); }
+.tab-btn.active { color: var(--clr-primary-500); border-bottom-color: var(--clr-primary-500); }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* --------------------------------------------------------------------------
+   29. Loading Spinner
+   -------------------------------------------------------------------------- */
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --------------------------------------------------------------------------
+   30. Utility Classes
+   -------------------------------------------------------------------------- */
+.text-primary   { color: var(--txt-primary) !important; }
+.text-secondary { color: var(--txt-secondary) !important; }
+.text-muted     { color: var(--txt-muted) !important; }
+.text-accent    { color: var(--clr-primary-500) !important; }
+.text-success   { color: var(--clr-success) !important; }
+.text-danger    { color: var(--clr-danger) !important; }
+.text-warning   { color: var(--clr-warning) !important; }
+.text-mono      { font-family: var(--font-mono) !important; }
+.text-bold      { font-weight: 700 !important; }
+.text-sm        { font-size: 0.8rem !important; }
+.text-xs        { font-size: 0.72rem !important; }
+.text-center    { text-align: center; }
+
+.mt-1 { margin-top: var(--sp-1); } .mt-2 { margin-top: var(--sp-2); }
+.mt-3 { margin-top: var(--sp-3); } .mt-4 { margin-top: var(--sp-4); }
+.mb-1 { margin-bottom: var(--sp-1); } .mb-2 { margin-bottom: var(--sp-2); }
+.mb-3 { margin-bottom: var(--sp-3); } .mb-4 { margin-bottom: var(--sp-4); }
+
+.flex { display: flex; } .flex-center { display: flex; align-items: center; }
+.gap-2 { gap: var(--sp-2); } .gap-3 { gap: var(--sp-3); } .gap-4 { gap: var(--sp-4); }
+.justify-between { justify-content: space-between; }
+.flex-wrap { flex-wrap: wrap; }
+
+.hidden { display: none !important; }
+.full-width { width: 100%; }
+
+/* --------------------------------------------------------------------------
+   31. Presentation Mode Overlay
+   -------------------------------------------------------------------------- */
+.presentation-overlay {
+  position: fixed; inset: 0;
+  background: var(--clr-primary-900);
+  z-index: 1000;
+  display: flex; flex-direction: column;
+  overflow: auto;
+}
+
+.presentation-header {
+  background: rgba(255,255,255,.04);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: var(--sp-4) var(--sp-6);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.presentation-title {
+  font-size: 1.1rem; font-weight: 800; color: #fff;
+}
+
+.presentation-body {
+  flex: 1; padding: var(--sp-5) var(--sp-6);
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: var(--sp-5);
+}
+
+.presentation-map-wrap { grid-column: 1 / -1; }
+
+.pres-card {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: var(--border-radius);
+  padding: var(--sp-4);
+}
+
+.pres-card-label { font-size: 0.65rem; color: var(--clr-primary-300); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+.pres-card-value { font-size: 1.6rem; font-weight: 700; color: #fff; font-family: var(--font-mono); }
+
+/* --------------------------------------------------------------------------
+   32. About Page
+   -------------------------------------------------------------------------- */
+.tech-pills {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2);
+}
+
+.tech-pill {
+  background: var(--clr-primary-100);
+  color: var(--clr-primary-700);
+  font-size: 0.75rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   33. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .cards-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .presentation-body { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .app-sidebar { width: 64px; }
+  .brand-name, .brand-tagline, .nav-item span, .sidebar-footer .mode-badge span { display: none; }
+  .app-main { margin-left: 64px; }
+  .cards-grid-4, .cards-grid-3, .cards-grid-2 { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .page-content { padding: var(--sp-4); }
+}
+
+/* --------------------------------------------------------------------------
+   21. Geocoding & Address Autocomplete Suggestions
+   -------------------------------------------------------------------------- */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-clr);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 260px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+.search-suggestion-item {
+  padding: 10px 14px;
+  font-size: 0.825rem;
+  color: var(--txt-primary);
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.15s ease;
+}
+.search-suggestion-item:last-child {
+  border-bottom: none;
+}
+.search-suggestion-item:hover {
+  background: var(--clr-primary-50);
+  color: var(--clr-primary-700);
+}
+.search-suggestion-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.search-suggestion-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

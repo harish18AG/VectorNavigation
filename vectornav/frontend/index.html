@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — GPS Navigation Dashboard</title>
+  <meta name="description" content="VectorNav: Application of Vector Calculus in Real-Time GPS Navigation Systems — B.Tech Capstone Project Dashboard"/>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- App CSS -->
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo">
+      <div class="brand-icon">🛰</div>
+      <span class="brand-name">VectorNav</span>
+    </div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()" title="Switch GPS / Demo Mode">
+      <span class="mode-dot demo"></span>
+      <span id="mode-label">DEMO MODE</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ===================== MAIN ===================== -->
+<main class="app-main">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>📡 Dashboard</h1>
+      <p>Real-time GPS + Vector Calculus overview</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline btn-sm" onclick="openPresentationMode()">🖥 Presentation Mode</button>
+      <button class="btn btn-primary btn-sm" id="demo-btn" onclick="handleDemoToggle()">▶ Start Demo</button>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- GPS Status Bar -->
+    <div class="gps-status-bar">
+      <div class="gps-status-indicator">
+        <div class="status-dot demo" id="status-dot"></div>
+        <span id="gps-status-label" style="font-weight:700;">Demo Mode</span>
+      </div>
+      <div class="gps-stat"><span class="gps-stat-label">Latitude</span><span class="gps-stat-value" id="gps-lat">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Longitude</span><span class="gps-stat-value" id="gps-lon">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Altitude</span><span class="gps-stat-value" id="gps-alt">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Accuracy</span><span class="gps-stat-value" id="gps-accuracy">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Updated</span><span class="gps-stat-value" id="gps-updated">—</span></div>
+    </div>
+
+    <!-- Motion Cards -->
+    <div class="section-header">
+      <div class="section-title">⚡ Motion Analysis</div>
+    </div>
+    <div class="cards-grid cards-grid-4" style="margin-bottom:var(--sp-5);">
+      <div class="card card-metric">
+        <div class="card-label">Speed</div>
+        <div class="card-value" id="dash-speed">—</div>
+        <div class="card-sub text-mono" style="font-size:.7rem;">|v| = √(vx²+vy²+vz²)</div>
+      </div>
+      <div class="card card-metric accent-cyan">
+        <div class="card-label">Velocity (m/s)</div>
+        <div class="card-value" id="dash-vel" style="font-size:1.1rem;">vx·vy·vz</div>
+        <div class="card-sub text-mono" style="font-size:.7rem;">v = dr/dt</div>
+      </div>
+      <div class="card card-metric accent-orange">
+        <div class="card-label">Acceleration</div>
+        <div class="card-value" id="dash-accel">—</div>
+        <div class="card-sub text-mono" style="font-size:.7rem;">a = dv/dt</div>
+      </div>
+      <div class="card card-metric accent-green">
+        <div class="card-label">Direction</div>
+        <div class="card-value" id="dash-direction" style="font-size:1.4rem;">—</div>
+        <div class="card-sub text-mono" style="font-size:.7rem;">u = v/|v|</div>
+      </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="section-header">
+      <div class="section-title">🗺 Navigation</div>
+    </div>
+    <div class="cards-grid cards-grid-4" style="margin-bottom:var(--sp-5);">
+      <div class="card card-metric">
+        <div class="card-label">Distance to Dest.</div>
+        <div class="card-value" id="dash-dist">—</div>
+        <div class="card-sub">d = √(Δx²+Δy²+Δz²)</div>
+      </div>
+      <div class="card card-metric accent-cyan">
+        <div class="card-label">Est. Travel Time</div>
+        <div class="card-value" id="dash-time">—</div>
+        <div class="card-sub">t = d / |v|</div>
+      </div>
+      <div class="card card-metric accent-green">
+        <div class="card-label">Route Status</div>
+        <div class="card-value" id="dash-route" style="font-size:1rem;">Ready</div>
+        <div class="card-sub">Cost = w₁d + w₂t + w₃e</div>
+      </div>
+      <div class="card card-metric accent-red">
+        <div class="card-label">GPS Error</div>
+        <div class="card-value" id="dash-gps-error">~4.2 m</div>
+        <div class="card-sub">Error = √(Δx²+Δy²+Δz²)</div>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-container">
+      <div class="map-header">
+        <span class="map-title">🗺 Live Navigation Map</span>
+        <div class="flex gap-2">
+          <button class="btn btn-outline btn-sm" onclick="window.autoDetectCurrentLocation(p => { window.mapFlyTo('map', p.lat, p.lon, 14); window.showAlert('Located at your actual GPS coordinates!', 'success'); })">📍 Detect My Location</button>
+          <select class="form-select" style="font-size:.78rem;padding:4px 8px;width:auto;" onchange="window.setDemoRoute(this.value); updateRouteInfoCard();">
+            <option value="chennai" selected>Chennai City Route</option>
+            <option value="south_regional">South India Regional</option>
+            <option value="hyderabad">Hyderabad City Route</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="const p = window.VN?.position; window.mapFlyTo('map', p?.lat||13.0827, p?.lon||80.2707, 12)">Reset View</button>
+        </div>
+      </div>
+      <div id="map"></div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Current Position</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Destination</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2563eb;border:2px dashed #2563eb;background:transparent;"></div> Trajectory</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;"></div> Waypoints</div>
+      </div>
+    </div>
+
+    <!-- Bottom info grid -->
+    <div class="cards-grid cards-grid-3">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:var(--sp-3);">📍 Current Position</div>
+        <table class="result-table">
+          <tr><th>Latitude</th><td id="info-lat">—</td></tr>
+          <tr><th>Longitude</th><td id="info-lon">—</td></tr>
+          <tr><th>Altitude</th><td id="info-alt">—</td></tr>
+          <tr><th>Accuracy</th><td id="info-accuracy">—</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:var(--sp-3);">⚡ Speed &amp; Direction</div>
+        <table class="result-table">
+          <tr><th>Speed</th><td id="info-speed">—</td></tr>
+          <tr><th>Direction</th><td id="info-dir">—</td></tr>
+          <tr><th>GPS Accuracy</th><td id="info-gps-acc">~4.2 m</td></tr>
+          <tr><th>Mode</th><td id="info-mode">Demo</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:var(--sp-3);">🗺 Active Route Info</div>
+        <table class="result-table">
+          <tr><th>Start</th><td id="info-start">Chennai Central</td></tr>
+          <tr><th>Destination</th><td id="info-dest">Siruseri IT Park</td></tr>
+          <tr><th>Est. Distance</th><td id="info-route-dist">~28.4 km</td></tr>
+          <tr><th>Optimised</th><td id="info-opt">Route B</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</main><!-- /app-main -->
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script>
+// Dashboard init
+document.addEventListener('DOMContentLoaded', () => {
+  const startLat = window.VN.position ? window.VN.position.lat : 13.0827;
+  const startLon = window.VN.position ? window.VN.position.lon : 80.2707;
+  const map = window.initMap('map', { lat: startLat, lon: startLon, zoom: 12 });
+  window.showDemoWaypoints('map');
+  updateRouteInfoCard();
+
+  // Try auto-detecting real location quietly
+  window.autoDetectCurrentLocation(
+    pos => {
+      window.setPositionMarker('map', pos.lat, pos.lon, 'My Location');
+      window.mapFlyTo('map', pos.lat, pos.lon, 13);
+    },
+    () => {} // silent fallback to demo
+  );
+
+  // Subscribe to position updates
+  window.onPositionUpdate(pos => {
+    window.setPositionMarker('map', pos.lat, pos.lon);
+    window.mapFlyTo('map', pos.lat, pos.lon, 13);
+
+    // Update info table
+    window.setText('info-lat',      pos.lat.toFixed(6));
+    window.setText('info-lon',      pos.lon.toFixed(6));
+    window.setText('info-alt',      (pos.alt||0).toFixed(1)+' m');
+    window.setText('info-accuracy', (pos.accuracy||4.2).toFixed(1)+' m');
+    window.setText('info-gps-acc',  (pos.accuracy||4.2).toFixed(1)+' m');
+    window.setText('info-mode',     pos.source==='live'?'Live GPS':'Demo');
+    window.setText('gps-accuracy',  (pos.accuracy||4.2).toFixed(1)+' m');
+
+    // Calc speed if 2 points available
+    const hist = window.getLastPoints(2);
+    if (hist.length === 2) {
+      const v = window.clientMath.velocity(hist[0], hist[0].timestamp, hist[1], hist[1].timestamp);
+      if (v) {
+        window.setText('dash-speed',   v.speed_kmh.toFixed(1)+' km/h');
+        window.setText('dash-vel',     `${v.vx.toFixed(2)}·${v.vy.toFixed(2)}·${v.vz.toFixed(2)}`);
+        window.setText('info-speed',   v.speed_kmh.toFixed(1)+' km/h');
+        const bearing = window.clientMath.bearing(hist[0].lat,hist[0].lon,hist[1].lat,hist[1].lon);
+        const card    = window.clientMath.cardinal(bearing);
+        window.setText('dash-direction', card+' '+bearing.toFixed(0)+'°');
+        window.setText('info-dir',  card+' '+bearing.toFixed(0)+'°');
+        // Estimate time to destination
+        const dPts = window.getDemoWaypoints();
+        if (dPts.length > 0) {
+          const dest = dPts[dPts.length-1];
+          const distM = window.clientMath.haversine(pos.lat,pos.lon,dest.lat,dest.lon);
+          window.setText('dash-dist', (distM/1000).toFixed(2)+' km');
+          const eta = v.speed_ms > 0.5 ? ((distM/v.speed_ms)/60).toFixed(1)+' min' : '—';
+          window.setText('dash-time', eta);
+        }
+      }
+    }
+  });
+
+  // Update trajectory on dashboard map too
+  let _traj = [];
+  window.onPositionUpdate(pos => {
+    _traj.push({lat:pos.lat,lon:pos.lon});
+    if (_traj.length > 100) _traj.shift();
+    window.updateTrajectory('map', _traj);
+  });
+});
+
+function updateRouteInfoCard() {
+  const pts = window.getDemoWaypoints();
+  if (!pts || pts.length < 2) return;
+  const start = pts[0];
+  const dest  = pts[pts.length - 1];
+  window.setText('info-start', start.name || 'Start');
+  window.setText('info-dest',  dest.name || 'Destination');
+  const dist = (window.clientMath.haversine(start.lat, start.lon, dest.lat, dest.lon) / 1000).toFixed(1);
+  window.setText('info-route-dist', `~${dist} km`);
+}
+
+let _demoActive = false;
+function handleDemoToggle() {
+  const btn = document.getElementById('demo-btn');
+  if (!_demoActive) {
+    window.startDemoMode();
+    _demoActive = true;
+    btn.textContent = '⏹ Stop Demo';
+    btn.className = 'btn btn-danger btn-sm';
+  } else {
+    window.stopDemoMode();
+    _demoActive = false;
+    btn.textContent = '▶ Start Demo';
+    btn.className = 'btn btn-primary btn-sm';
+  }
+}
+</script>
+</body>
+</html>

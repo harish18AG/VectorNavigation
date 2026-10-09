@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — Formula Reference</title>
+  <meta name="description" content="Complete vector calculus formula reference for GPS navigation — position vectors, velocity, acceleration, gradient, divergence, curl, line integrals"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .formulas-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--sp-4); }
+    @media(max-width:1000px){.formulas-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:640px) {.formulas-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo"><div class="brand-icon">🛰</div><span class="brand-name">VectorNav</span></div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item active"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()"><span class="mode-dot demo"></span><span id="mode-label">DEMO MODE</span></button>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>∑ Formula Reference</h1>
+      <p>All vector calculus formulas used in VectorNav — with explanations</p>
+    </div>
+  </div>
+  <div class="page-content">
+
+    <div class="alert alert-info" style="margin-bottom:var(--sp-5);">
+      <span>📚</span>
+      <span>This reference covers all mathematical formulas implemented in VectorNav. Each formula is applied to real GPS data — no random values.</span>
+    </div>
+
+    <div class="formulas-grid">
+
+      <!-- Position Vector -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Position Vector</div>
+          <div class="formula-expr">r(t) = x(t)î + y(t)ĵ + z(t)k̂</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            The position vector r(t) describes the location of a GPS receiver in 3D space at time t.
+            x, y, z are ECEF (Earth-Centred Earth-Fixed) coordinates in metres derived from
+            latitude, longitude, and altitude using the WGS-84 ellipsoid model.
+          </div>
+        </div>
+      </div>
+
+      <!-- Distance -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Distance (Euclidean 3D)</div>
+          <div class="formula-expr">d = √((x₂−x₁)² + (y₂−y₁)² + (z₂−z₁)²)</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            The straight-line distance between two GPS positions in 3D ECEF space.
+            For surface navigation, the Haversine formula is also used to compute
+            the great-circle distance along the Earth's surface, accounting for
+            Earth's curvature.
+          </div>
+        </div>
+      </div>
+
+      <!-- Velocity -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Velocity</div>
+          <div class="formula-expr">v = dr/dt ≈ Δr / Δt</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            Velocity is the rate of change of position with respect to time.
+            For discrete GPS readings, this is approximated as the displacement
+            vector Δr = r₂ − r₁ divided by the time difference Δt = t₂ − t₁.
+            The result has components vx, vy, vz in m/s.
+          </div>
+        </div>
+      </div>
+
+      <!-- Speed -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Speed (magnitude)</div>
+          <div class="formula-expr">|v| = √(vx² + vy² + vz²)</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            Speed is the scalar magnitude of the velocity vector — it tells us
+            how fast the receiver is moving, without direction information.
+            Expressed in m/s (convert × 3.6 for km/h).
+          </div>
+        </div>
+      </div>
+
+      <!-- Acceleration -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Acceleration</div>
+          <div class="formula-expr">a = dv/dt = d²r/dt² ≈ Δv/Δt</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            Acceleration is the rate of change of velocity. For discrete GPS data,
+            it is approximated as Δv/Δt between consecutive velocity estimates.
+            A positive value means speeding up; negative means braking.
+            Magnitude = √(ax²+ay²+az²) in m/s².
+          </div>
+        </div>
+      </div>
+
+      <!-- Direction -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Direction (Unit Vector)</div>
+          <div class="formula-expr">û = v / |v|</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            The direction of motion is obtained by normalising the velocity vector
+            to a unit vector. The heading (compass bearing) is computed using
+            atan2(sin(Δλ)·cos(φ₂), cos(φ₁)·sin(φ₂)−sin(φ₁)·cos(φ₂)·cos(Δλ))
+            and mapped to N/NE/E/SE/S/SW/W/NW directions.
+          </div>
+        </div>
+      </div>
+
+      <!-- Gradient -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Gradient</div>
+          <div class="formula-expr">∇f = (∂f/∂x)î + (∂f/∂y)ĵ</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            The gradient of a scalar field f points in the direction of steepest
+            increase. In GPS navigation context, f could represent elevation,
+            signal strength, or traffic density. Moving against the gradient
+            minimises resistance and aids route planning on varied terrain.
+          </div>
+        </div>
+      </div>
+
+      <!-- Divergence -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Divergence</div>
+          <div class="formula-expr">∇ · F = ∂Fx/∂x + ∂Fy/∂y</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            Divergence measures the net outward flow from a point in a vector field.
+            In a traffic flow model, positive divergence indicates vehicles spreading
+            out (highway merging); negative divergence indicates vehicles converging
+            (bottleneck). It helps identify congestion points.
+          </div>
+        </div>
+      </div>
+
+      <!-- Curl -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Curl</div>
+          <div class="formula-expr">(∇ × F)_z = ∂Fy/∂x − ∂Fx/∂y</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            Curl measures local rotational behaviour of a vector field.
+            In 2D navigation, the z-component of curl indicates whether traffic
+            is rotating (e.g., roundabouts) or flowing straight.
+            An irrotational field (∇×F = 0) implies no circular patterns.
+          </div>
+        </div>
+      </div>
+
+      <!-- Line Integral -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Line Integral</div>
+          <div class="formula-expr">∫C F · dr = Σ Fᵢ · Δrᵢ</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            A line integral accumulates the dot product of a vector field F with
+            the displacement dr along a path C. In navigation, this can represent
+            the total work done against wind or terrain resistance. A route with
+            a smaller line integral is energetically more efficient.
+          </div>
+        </div>
+      </div>
+
+      <!-- GPS Error -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">GPS Error</div>
+          <div class="formula-expr">Error = √((Δx)² + (Δy)² + (Δz)²)</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            GPS error is the Euclidean distance between the true reference position
+            and the measured GPS position in ECEF space. Sources include ionospheric
+            delay, multipath, satellite geometry (DOP), and receiver noise.
+            Error correction reduces this distance by applying a weighted correction
+            factor to move the measured position towards the reference.
+          </div>
+        </div>
+      </div>
+
+      <!-- Route Cost -->
+      <div class="formula-card">
+        <div class="formula-card-header">
+          <div class="formula-name">Route Cost Function</div>
+          <div class="formula-expr">Cost = w₁·dist_norm + w₂·time_norm + w₃·error_norm</div>
+        </div>
+        <div class="formula-card-body">
+          <div class="formula-what">What does this mean?</div>
+          <div class="formula-desc">
+            A weighted sum of normalised route attributes (distance, time, GPS error)
+            quantifies the overall cost of each route. Adjusting weights w₁, w₂, w₃
+            (which must sum to 1) shifts priority. The route with the lowest total
+            cost is selected as optimal — a practical application of optimisation theory.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /formulas-grid -->
+
+    <!-- ECEF Conversion Note -->
+    <div class="card" style="margin-top:var(--sp-6);">
+      <div class="section-title" style="margin-bottom:var(--sp-3);">📐 WGS-84 ECEF Conversion Formulas</div>
+      <div class="math-panel" style="margin:0;">
+        <div class="math-title">Converting Latitude (φ), Longitude (λ), Altitude (h) → ECEF (x, y, z)</div>
+        <div class="math-formula">
+          a = 6,378,137.0 m &nbsp; (WGS-84 semi-major axis)<br>
+          f = 1 / 298.257223563 &nbsp; (flattening)<br>
+          e² = 2f − f² &nbsp; (eccentricity squared)<br>
+          N(φ) = a / √(1 − e²·sin²(φ)) &nbsp; (prime vertical radius)<br><br>
+          x = (N + h)·cos(φ)·cos(λ)<br>
+          y = (N + h)·cos(φ)·sin(λ)<br>
+          z = (N·(1 − e²) + h)·sin(φ)
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+</body>
+</html>

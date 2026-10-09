@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VectorNav — Module 2: Motion, Velocity & Direction</title>
+  <meta name="description" content="Real-time velocity, speed, acceleration and direction analysis using vector calculus"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<aside class="app-sidebar">
+  <a href="index.html" class="sidebar-brand">
+    <div class="brand-logo"><div class="brand-icon">🛰</div><span class="brand-name">VectorNav</span></div>
+    <div class="brand-tagline">Vector Calculus in GPS Navigation</div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="index.html"      class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="navigation.html" class="nav-item"><span class="nav-icon">🧭</span><span>Live Navigation</span></a>
+    <div class="nav-section-label">Modules</div>
+    <a href="module1.html"    class="nav-item"><span class="nav-icon">📍</span><span>Module 1 — Position</span></a>
+    <a href="module2.html"    class="nav-item active"><span class="nav-icon">⚡</span><span>Module 2 — Motion</span></a>
+    <a href="module3.html"    class="nav-item"><span class="nav-icon">🗺</span><span>Module 3 — Route &amp; Error</span></a>
+    <div class="nav-section-label">Analysis</div>
+    <a href="analytics.html"  class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    <a href="history.html"    class="nav-item"><span class="nav-icon">📋</span><span>Nav History</span></a>
+    <a href="formulas.html"   class="nav-item"><span class="nav-icon">∑</span><span>Formula Reference</span></a>
+    <a href="about.html"      class="nav-item"><span class="nav-icon">ℹ</span><span>About Project</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="mode-badge" onclick="toggleMode()"><span class="mode-dot demo"></span><span id="mode-label">DEMO MODE</span></button>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>⚡ Module 2 — Motion, Velocity &amp; Direction Analysis</h1>
+      <p>v = dr/dt · a = dv/dt · u = v/|v| — computed from consecutive GPS readings</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="window.startDemoMode()">▶ Start Demo</button>
+      <button class="btn btn-secondary btn-sm" onclick="window.stopDemoMode()">⏹ Stop</button>
+      <button class="btn btn-danger btn-sm" onclick="window.clearModule2Data()">🗑 Clear Data</button>
+    </div>
+  </div>
+  <div class="page-content">
+    <!-- GPS Status -->
+    <div class="gps-status-bar">
+      <div class="gps-status-indicator"><div class="status-dot demo" id="status-dot"></div><span id="gps-status-label">Demo Mode</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lat</span><span class="gps-stat-value" id="gps-lat">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Lon</span><span class="gps-stat-value" id="gps-lon">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Alt</span><span class="gps-stat-value" id="gps-alt">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Accuracy</span><span class="gps-stat-value" id="gps-accuracy">—</span></div>
+      <div class="gps-stat"><span class="gps-stat-label">Updated</span><span class="gps-stat-value" id="gps-updated">—</span></div>
+    </div>
+
+    <div class="module-flow">
+
+      <!-- ── VELOCITY ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">⚡</div>
+          <div><div class="module-section-title">Velocity — v = dr/dt ≈ Δr/Δt</div>
+          <div class="module-section-sub">Displacement vector divided by time interval between consecutive GPS readings</div></div>
+        </div>
+        <div class="module-section-body">
+          <div class="cards-grid cards-grid-2">
+            <div class="math-panel">
+              <div class="math-title">Velocity Calculation</div>
+              <div class="math-formula">v = Δr/Δt = (r₂ − r₁) / (t₂ − t₁)</div>
+              <div class="math-step"><div class="step-num">1</div><div class="step-text">Δt (time step) = <span class="highlight" id="vel-dt">—</span></div></div>
+              <div class="math-step"><div class="step-num">2</div><div class="step-text">vx = Δx/Δt = <span class="highlight" id="vel-vx">—</span></div></div>
+              <div class="math-step"><div class="step-num">3</div><div class="step-text">vy = Δy/Δt = <span class="highlight" id="vel-vy">—</span></div></div>
+              <div class="math-step"><div class="step-num">4</div><div class="step-text">vz = Δz/Δt = <span class="highlight" id="vel-vz">—</span></div></div>
+            </div>
+            <div class="math-panel">
+              <div class="math-title">Speed |v| = √(vx² + vy² + vz²)</div>
+              <div class="math-step"><div class="step-num">1</div><div class="step-text">vx² = <span class="highlight" id="spd-vx2">—</span></div></div>
+              <div class="math-step"><div class="step-num">2</div><div class="step-text">vy² = <span class="highlight" id="spd-vy2">—</span></div></div>
+              <div class="math-step"><div class="step-num">3</div><div class="step-text">vz² = <span class="highlight" id="spd-vz2">—</span></div></div>
+              <div class="math-step"><div class="step-num">4</div><div class="step-text">vx²+vy²+vz² = <span class="highlight" id="spd-sum">—</span></div></div>
+              <div class="calc-result"><div class="calc-result-label">|v| (m/s)</div><div class="calc-result-value" id="spd-result">—</div></div>
+            </div>
+          </div>
+          <div class="cards-grid cards-grid-4" style="margin-top:var(--sp-4);">
+            <div class="card card-metric"><div class="card-label">Speed (m/s)</div><div class="card-value" id="vel-speed">—</div></div>
+            <div class="card card-metric accent-cyan"><div class="card-label">Speed (km/h)</div><div class="card-value" id="vel-kmh">—</div></div>
+            <div class="card card-metric accent-orange"><div class="card-label">Acceleration</div><div class="card-value" id="acc-mag">—</div><div class="card-sub">m/s²</div></div>
+            <div class="card card-metric accent-green"><div class="card-label">Direction</div><div class="card-value" id="compass-cardinal" style="font-size:1.4rem;">—</div><div class="card-sub" id="compass-bearing">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ACCELERATION ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">🚀</div>
+          <div><div class="module-section-title">Acceleration — a = dv/dt ≈ Δv/Δt</div>
+          <div class="module-section-sub">Rate of change of velocity vector between consecutive measurements</div></div>
+        </div>
+        <div class="module-section-body">
+          <div class="cards-grid cards-grid-2">
+            <div class="math-panel">
+              <div class="math-title">Acceleration Calculation</div>
+              <div class="math-formula">a = Δv/Δt = (v₂ − v₁) / (t₂ − t₁)</div>
+              <div class="math-step"><div class="step-num">1</div><div class="step-text">ax = Δvx/Δt = <span class="highlight" id="acc-ax">—</span></div></div>
+              <div class="math-step"><div class="step-num">2</div><div class="step-text">ay = Δvy/Δt = <span class="highlight" id="acc-ay">—</span></div></div>
+              <div class="math-step"><div class="step-num">3</div><div class="step-text">az = Δvz/Δt = <span class="highlight" id="acc-az">—</span></div></div>
+              <div class="calc-result"><div class="calc-result-label">|a| = √(ax²+ay²+az²)</div><div class="calc-result-value" id="acc-mag-full">—</div></div>
+            </div>
+            <!-- Compass -->
+            <div class="canvas-container">
+              <div class="compass-wrap">
+                <canvas id="compass-canvas" width="200" height="200"></canvas>
+                <div class="compass-info">
+                  <div class="compass-stat">
+                    <div class="compass-stat-label">Cardinal</div>
+                    <div class="compass-stat-value" id="comp-card">N</div>
+                  </div>
+                  <div class="compass-stat">
+                    <div class="compass-stat-label">Heading</div>
+                    <div class="compass-stat-value" id="comp-bear">0.00°</div>
+                  </div>
+                  <div class="compass-stat">
+                    <div class="compass-stat-label">u = v/|v|</div>
+                    <div class="compass-stat-value" style="font-size:.85rem;" id="comp-unit">—</div>
+                  </div>
+                  <div class="compass-stat">
+                    <div class="compass-stat-label">Speed km/h</div>
+                    <div class="compass-stat-value" id="comp-speed">0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRAJECTORY MAP ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">🗺</div>
+          <div><div class="module-section-title">Motion Trajectory — P₁ → P₂ → P₃ → ...</div>
+          <div class="module-section-sub">Real-time movement path updates as new GPS readings arrive</div></div>
+        </div>
+        <div class="module-section-body" style="padding:0;">
+          <div id="mod2-map" style="height:360px;"></div>
+          <div class="map-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div> Current Position</div>
+            <div class="legend-item"><div class="legend-dot" style="background:transparent;border:2px dashed #2563eb;"></div> Trajectory</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CHARTS ── -->
+      <div class="module-section">
+        <div class="module-section-header">
+          <div class="module-section-icon">📊</div>
+          <div><div class="module-section-title">Real-Time Charts</div>
+          <div class="module-section-sub">Speed, Velocity components, Acceleration, GPS Accuracy vs Time</div></div>
+        </div>
+        <div class="module-section-body">
+          <div class="cards-grid cards-grid-2">
+            <div class="chart-container">
+              <div class="chart-title">📈 Speed vs Time (km/h)</div>
+              <div class="chart-canvas-wrap"><canvas id="speed-chart"></canvas></div>
+            </div>
+            <div class="chart-container">
+              <div class="chart-title">📈 Velocity Components vs Time (m/s)</div>
+              <div class="chart-canvas-wrap"><canvas id="velocity-chart"></canvas></div>
+            </div>
+            <div class="chart-container">
+              <div class="chart-title">📈 Acceleration vs Time (m/s²)</div>
+              <div class="chart-canvas-wrap"><canvas id="accel-chart"></canvas></div>
+            </div>
+            <div class="chart-container">
+              <div class="chart-title">📈 GPS Accuracy vs Time (m)</div>
+              <div class="chart-canvas-wrap"><canvas id="error-chart-m2"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /module-flow -->
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/gps.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/module2.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  window.initModule2();
+  // Sync acc-mag to acc-mag-full and compass stats
+  window.onPositionUpdate(() => {
+    setTimeout(() => {
+      const mag  = document.getElementById('acc-mag')?.textContent || '—';
+      const card = document.getElementById('compass-cardinal')?.textContent || '—';
+      const bear = document.getElementById('compass-bearing')?.textContent || '—';
+      const spd  = document.getElementById('vel-kmh')?.textContent || '0';
+      window.setText('acc-mag-full', mag);
+      window.setText('comp-card',  card);
+      window.setText('comp-bear',  bear);
+      window.setText('comp-speed', spd.replace(' km/h',''));
+    }, 100);
+  });
+});
+</script>
+</body>
+</html>
